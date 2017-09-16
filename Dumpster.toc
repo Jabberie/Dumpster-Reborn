@@ -1,4 +1,4 @@
-## Interface: 70200
+## Interface: 70300
 
 ## Title: Dumpster |cff7fff7f -Ace3-|r
 ## Title-enUS: Dumpster |cff7fff7f -Ace3-|r
