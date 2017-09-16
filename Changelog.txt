@@ -1,0 +1,93 @@
+20081107 - 1.0
+* Initial release
+
+20081112 - 1.1
+* Added ability to specify number of stacks to dump
+* Limited dumping into mail to 12 stacks
+
+20081113 - 1.2
+* Added ability to specify item quality
+
+20081128 - 1.3
+* Fixed bug in numstacks (would dump 5 stacks from every bag instead of 5 total)
+* Ace-ified
+* moved strings to Dumpster-enUS.lua (for localization)
+* rewrote option parsing
+* added merchant frame
+* added trade frame
+* added bind status
+* added tooltip search
+
+20081203 - 1.4
+* Changed some message texts, hopefully more clear
+* Auto-selects merchant gossip if /din is used at an NPC (such as Innkeepers)
+* Will now load on demand if ACP or AddonLoader is installed 
+
+20090113 - 1.5
+* Changed to load on demand only for AddonLoader
+* Fixed /dall once and for good.  /dall dumps from every tab of the guild bank
+* Updated embedded version of Ace
+* Moved to searchoptions (so) dictionary for parameter passing.  No more 15-argument functions that all need to be updated with every new parameter!
+* Added /full and /partial for only dumping full or partial stacks
+* Added /dout for merchants (buys items). "/dout 4 Sacred Candle" will buy 4 Sacred Candles.  Note that if an item comes in stacks from the vendor (for example arrows come in stacks of 200), then the number refers to stacks.  "/dout 4 arrow" will actually buy 4 * 200 = 800 arrows
+* Added /dout for mail (pulls items from your mail)
+* Added /only parameter.  If you type "/dout 10 /only apple" and you have 3 apples in your inventory, Dumpster will only dump 7 additional apples.  Doesn't work with /dout on merchants
+
+20090121 - 1.6
+* Added /except parameter.  "/din /except apple" will dump everything except apples
+* Added /remain parameter.  If you have 20 apples, "/din 2 /remain apple" will dump 18 of them.
+* Removed a fair amount of code duplicaton.
+* Changed option parsing to allow numbers anywhere - "/din 2 /full apple" vs "/din /full 2 apple"
+* Changed some magic numbers to actual constants (for example BANK_CONTAINER instead of -1)
+* Automatically set the mail to Inbox or SendMail frame depending on whether we're doing /din or /dout
+* Added /to option for /din to mail.  "/din 2 apple /to HoboJoe" would mail 2 apples to HoboJoe.  /to is ignored other places
+* Added command chaining.  "/din 2 apple; 3 block; 1 pear tree" will dump those items in sequence
+* Fixed mail /dout skipping some messages.  Blizzard doesn't put mails in order or consecutively, so you just have to scan all 12 possible slots. Jerks.
+* Slight speedup: don't get tooltip unless we're actually checking it
+
+20090124 - 1.7
+* Fixed bug in /dall only checking the first two tabs
+* Fixed option parsing for /except
+
+20090127 - 1.8
+* fixed some bugs with /except
+* rewrote option parsing to be more flexible.  This will allow easier adding of options, and prevent options from clobbering each other
+* fixed a bug where /din to mail would add an unnecessary delay
+* Added sets! Any command line you would normally use with Dumpster can be made a set.
+	/dadd setname setdetails
+	/ddel setname
+	/dlist
+
+	Example:
+	/dadd frostbag /to mistertailor 60 Frostweave Cloth; 12 Infinite Dust; 2 Eternium Thread
+	/din frostbag
+
+20090305 - 1.9
+* Added color based on status:
+	green - dumped everything you asked for (which may be nothing in the case of /only)
+	red - dumped nothing
+	blue - dumped some, but not all
+* Fixed a bug with dump counts when chaining commands
+
+20090413 - 2.0
+* Added GUI interface for editing sets (/dumpster)
+* Added ability to use set names in conjunction with other parameters
+* Added GUI help
+
+20090425 - 2.1
+* Bumped TOC
+
+20101013 - 4.0
+* Bumped TOC
+* Fixed issue with "this" error
+
+20101016 - 4.1
+* Fixed tooltip scanning
+* Found to more "this" errors with sets
+* Updated included Ace3
+* Changed getglobal() usage to _G[]
+* Fixed adding a new set
+* Fixed error when no sets are defined (such as during first run)
+
+20170425 - 7.1
+* Bumped TOC

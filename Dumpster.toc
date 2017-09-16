@@ -1,0 +1,39 @@
+## Interface: 70200
+
+## Title: Dumpster |cff7fff7f -Ace3-|r
+## Title-enUS: Dumpster |cff7fff7f -Ace3-|r
+## Notes: Dump things in/out of your bank/guild bank
+## Notes-enUS: Dump things in/out of your bank/guild bank
+
+## Author: Badhairday-Malygos
+## Project Manager: Jabberie-Draka
+## X-Feedback: jabberie AT gmail DOT com
+## X-Website: http://wow.curse.com/downloads/wow-addons/details/dumpster-reborn.aspx
+## X-Category: Inventory
+
+## Version: 701
+## X-Revision: 701
+## X-Date: 2017-04-25
+
+## X-Localizations: enUS
+## X-CompatibleLocales: enUS
+
+## RequiredDeps:
+## OptionalDeps: Ace3
+## X-Embeds: Ace3
+
+## SavedVariables: dumpset
+## SavedVariablesPerCharacter:
+
+## LoadOnDemand: 0
+## LoadManagers: AddonLoader
+## X-LoadOn-Always: delayed
+## DefaultState: enabled
+
+hidden-tooltip-for-scanning.xml
+
+embeds.xml
+
+Dumpster-enUS.lua
+Dumpster.lua
+
