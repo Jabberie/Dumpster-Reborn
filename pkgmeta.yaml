@@ -1,0 +1,10 @@
+package-as: Dumpster-Reborn
+enable-nolib-creation: yes
+
+license-output: LICENSE.txt
+manual-changelog: CHANGELOG.txt
+
+
+ignore:
+    - README.md
+    - .pkgmeta
