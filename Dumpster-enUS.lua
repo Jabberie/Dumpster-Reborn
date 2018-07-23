@@ -49,8 +49,11 @@ L["dumpsetempty"]	= function(X) return "Empty set given for ["..X.."]"; end
 L["dumpsetadded"]	= function(X,Y) return "Added set named ["..X.."] containing ["..Y.."]"; end
 L["dumpsetuse"]	= function(X,Y) return "Using set named ["..X.."] containing ["..Y.."]"; end
 
-
-L["bindBOA"]	= "Binds to account";		-- matches in-game text
+-- thanks neevor
+-- fix for account bound items  
+--L["bindBOA"]    = "Binds to account";        -- matches in-game text
+--L["bindBOA"]    = "Battle.net Account Bound";        -- matches in-game text
+L["bindBOA"]    = "Blizzard Account Bound";        -- matches in-game text 
 L["bindBOE"]	= ITEM_BIND_ON_EQUIP ;		-- matches in-game text
 L["bindBOU"]	= ITEM_BIND_ON_USE ;		-- matches in-game text
 L["bindBOP"]	= ITEM_BIND_ON_PICKUP ;		-- matches in-game text

@@ -503,7 +503,10 @@ function Dumpster:ParseOptions(so)
 				if debug then self:Print(L.debugflagtoken(flagtoken)); end
 			else
 				-- /flag token somethingelse
-				flagmatch=flagtoken:match("%w+")
+				-- Thanks neevor
+				-- match "-" to, for mailing merged realms, but affects other tokens as well
+				   flagmatch=flagtoken:match("%w+%-?%w+")  -- new code
+				-- flagmatch=flagtoken:match("%w+") -- commented out old code
 				if flagmatch and flagmatch~="" then
 					flagtoken=flagmatch
 					if debug then self:Print(L.debugflagtoken(flagtoken)); end
