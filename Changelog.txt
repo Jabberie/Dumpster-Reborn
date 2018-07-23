@@ -95,3 +95,8 @@
 20170425 - 7.1
 * Bumped TOC
 * refeshed ace libs
+
+20180723
+* Bumped TOC
+* refeshed ace libs
+* updated code with suggestions from Neevar on curse to help with cross realm mail and Account Bound items
