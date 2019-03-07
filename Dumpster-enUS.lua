@@ -21,6 +21,7 @@ Qualifiers can be:\
           /poor /common /uncommon /rare /epic /legendary /artifact\
 - bind: /boa /boe /bop /bou /bound /notbound\
         /account /equip /pickup /use /soulbound\
+- expansion: /classic /tbc /wotlk /cata /mop /wod /legion /bfa\
 - tooltip search (/dout /t \"made by bob\" tiger)\
 - /to [person], will automatically fill the To: field when mailing\
 - /remain [number], will move all but [number] items\
@@ -30,6 +31,7 @@ Qualifiers can be:\
 Examples:\
 \"/dout 3 /epic /boe tiger\" - dumps out 3 epic BOE items with 'tiger' in the name\
 \"/din /green /soulbound .\" - dumps all uncommon soulbound items into your bank\
+\"/din /green /to \"Mrdisenchant-Draka\" /boe /legion .\" - Sends all uncommon Legion BoE items to Mrdisenchant-Draka\
 \"/din /to MisterTailor /full cloth .\" - mails all your full stacks of cloth to MisterTailor"
 
 L["nothingtodump"]	= "You didn't tell me what stuff to dump"
@@ -61,9 +63,20 @@ L["bindAll"]	= "All bindings";		-- doesn't match anything in-game
 L["bindBound"]	= ITEM_SOULBOUND ;		-- matches in-game text
 L["notbound"]	= "not Soulbound";		-- doesn't match anything in-game
 
+
+L["AllExp"]    	= "All Expansions";
+L["classic"]	= 0 ;
+L["tbc"]		= 1 ;
+L["wotlk"]		= 2 ;
+L["cata"]		= 3 ;
+L["mop"]		= 4 ;
+L["wod"]		= 5 ;
+L["legion"]		= 6 ;
+L["bfa"]		= 7 ;
+
 local debugtext = "|cff7f0000 DEBUG |r"
 
-L["debugDumpIt"]	= function(C,X,Y,Z) return debugtext.."Dumping with parameters maxcount=["..C.."], bind=["..X.."], inorout=["..Y.."], search=["..Z.."]"; end
+L["debugDumpIt"]	= function(C,W,X,Y,Z) return debugtext.."Dumping with parameters maxcount=["..C.."], expansion=["..W.."], bind=["..X.."], inorout=["..Y.."], search=["..Z.."]"; end
 
 L["debugSuperEnabled"]	= debugtext.."Super debugging messages enabled -- bring on the spam!";
 L["debugSuperDisabled"]	= debugtext.."Super debugging messages disabled";
@@ -83,7 +96,9 @@ L["debugSearch"]	= function(X) return debugtext.."Current search terms: ["..X.."
 
 L["debugParseResults"]	= function(X,Y,Z) return debugtext.."ParseOptions result: ["..X.."]=["..Y.."]"; end
 L["debugTooltip"]	= function(X) return debugtext.."Item tooltip = ["..X.."]"; end
+L["debugExpansion"]	= function(X) return debugtext.."Item Expansion = ["..X.."]"; end
 L["debugTooltipBindFail"]	= function(X,Y) return debugtext.."Failed to find bind status ["..X.."], looked for text ["..Y.."]"; end
+L["debugTooltipExpansionFail"]	= function(X,Y) return debugtext.."Failed to find Expansion ["..X.."], looked for text ["..Y.."]"; end
 L["debugTooltipFail"]	= function(X) return debugtext.."Failed to find text in tooltip, looked for text ["..X.."]"; end
 
 L["debugatMailSend"]	= debugtext.."SendMailFrame is visible, therefore we're at the mail send page";

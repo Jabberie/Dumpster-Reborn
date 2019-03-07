@@ -100,3 +100,16 @@
 * Bumped TOC
 * refeshed ace libs
 * updated code with suggestions from Neevar on curse to help with cross realm mail and Account Bound items
+
+20190307
+* Bumped TOC
+* Refeshed ace libs
+* Added expansion filters
+  - /classic
+  - /tbc
+  - /wotlk
+  - /cata
+  - /mop
+  - /wod
+  - /legion
+  - /bfa

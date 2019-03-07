@@ -437,10 +437,9 @@ function Dumpster:ParseOptions(so)
 		soulbound="soulbound", sb="soulbound", nb="notbound", notbound="notbound" },
 		quality = { poor=0, common=1, uncommon=2, rare=3, epic=4, legendary=5, artifact=6, 
 		grey=0, gray=0, white=1, green=2, blue=3, purple=4, orange=5, red=6 },
-		stackfull = { full="full", partial="partial" }
+		stackfull = { full="full", partial="partial" },
+		expansion = { classic=0, tbc=1, wotlk=2, cata=3, mop=4, wod=5, legion=6, bfa=7 }
 		}
-		
-
 
 	if debug then self:Print(L.debugSearch(so.search)); end
 	so.search = so.search:lower():gsub("  "," ")
@@ -534,7 +533,7 @@ function Dumpster:ParseOptions(so)
 		so.search = hex..".+"..so.search
 	end
 
-	if debug then 
+	if superdebug then 
 		local key=""
 		local value=""
 		for key, value in pairs(so) do
@@ -544,14 +543,17 @@ function Dumpster:ParseOptions(so)
 			self:Print(L.debugParseResults(key,value))
 		end
 	end
+
 	if (not so.search) or (so.search=="") or (so.search==" ") then
-		if so.bind=="bindAll" and (so.tooltipsearch:gsub(" ","")=="") then
+		if so.bind=="bindAll" and (so.tooltipsearch:gsub(" ","")=="") and so.expansion=="AllExp" then
 			self:Print(L.nothingtodump);
-			so.search=""
-		else
+			so.search=""	
+		else 
 			so.search="." -- they specified a qualifier but not a text
 		end
 	end
+
+
 	setloop=Dumpster:ExpandSets(so)
 	end
 	so.search = so.search:gsub("%-","%%%-")
@@ -594,8 +596,15 @@ function Dumpster:GetTooltipFromItem(item,so)
 	return text
 end
 
+
+function Dumpster:GetExpacID(item)
+	local itemName, _, _, _, _, _, _, _, _, _, _, _, _, _, expacID  = GetItemInfo(item)
+	return expacID
+end
+
 function Dumpster:CheckBindandTooltip(item,so)
 	local tooltip=""
+	local expID
 
 	if so.bind=="notbound" then
 		tooltip=Dumpster:GetTooltipFromItem(item,so)
@@ -622,6 +631,26 @@ function Dumpster:CheckBindandTooltip(item,so)
 		else
 			if so.except then
 				if superdebug then self:Print(L.debugTooltipBindFail(so.bind,L[so.bind])); end
+				return false
+			end
+		end
+	end
+
+
+	if so.expansion~="AllExp" then
+		
+		expID=Dumpster:GetExpacID(item)
+
+		if debug then self:Print(L.debugExpansion(expID)); end
+
+		if  expID ~= so.expansion then
+			if not so.except then
+				if debug then self:Print(L.debugTooltipExpansionFail(so.expansion,L[so.expansion])); end
+				return false
+			end
+		else
+			if so.except then
+				if debug then self:Print(L.debugTooltipExpansionFail(so.expansion,L[so.expansion])); end
 				return false
 			end
 		end
@@ -942,9 +971,9 @@ function Dumpster:NewDumpBag(so)
 	return dumpcount
 end
 
-function Dumpster:DumpIt(argsearch,arginout)
+function Dumpster:DumpIt(argsearch,arginout)		
 	-- initialize search options (so)
-	local so = { search=argsearch; bind="bindAll"; tooltipsearch=""; stackfull=""; maxcount=999; keepmaxcount=999; inout=arginout; only=false; test=false; justcount=false; delayed=false; remain=false; except=false; stacksize=1; where=""; leftovers=""; to=""; limitcount=999 }
+	local so = { search=argsearch; expansion="AllExp"; bind="bindAll"; tooltipsearch=""; stackfull=""; maxcount=999; keepmaxcount=999; inout=arginout; only=false; test=false; justcount=false; delayed=false; remain=false; except=false; stacksize=1; where=""; leftovers=""; to=""; limitcount=999 }
 
 	Dumpster:ParseOptions(so)
 
@@ -969,12 +998,12 @@ function Dumpster:DumpWithso(so)
 	local dumpcount=0
 	local dumploop=true
 	local existingCount=0
+
 	while dumploop do
 	dumpcount=0
 	if so.search=="" then return; end -- GetQualityAndBind will empty the so.search if paramters are bad
 
-
-	if debug then self:Print(L.debugDumpIt(so.maxcount,so.bind,so.inout,so.search)); end
+	if debug then self:Print(L.debugDumpIt(so.maxcount,tostring(so.expansion),so.bind,so.inout,so.search)); end
 
 	if so.only then
 		existingCount = Dumpster:GetExistingCount(so)
@@ -1231,3 +1260,4 @@ function Dumpster:SetUpInterfaceOptions()
 	Dumpster.helppanel:SetScript("OnShow",Dumpster.showHelpPanel)
 	InterfaceOptions_AddCategory(Dumpster.helppanel)
 end
+-- ############# Expansion

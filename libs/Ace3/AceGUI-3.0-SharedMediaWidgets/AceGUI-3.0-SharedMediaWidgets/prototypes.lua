@@ -3,7 +3,7 @@
 local DataVersion = 9001 -- dev version always overwrites everything else :)
 --@end-debug@]===]
 --@non-debug@
-local DataVersion = d01f66374adfed018149f99597edd8001bd4f246
+local DataVersion = 53
 --@end-non-debug@
 local AGSMW = LibStub:NewLibrary("AceGUISharedMediaWidgets-1.0", DataVersion)
 
@@ -11,6 +11,7 @@ if not AGSMW then
   return	-- already loaded and no upgrade necessary
 end
 
+LoadAddOn("LibSharedMedia-3.0")
 local AceGUI = LibStub("AceGUI-3.0")
 local Media = LibStub("LibSharedMedia-3.0")
 
