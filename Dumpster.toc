@@ -1,4 +1,4 @@
-## Interface: 80100
+## Interface: 80300
 
 ## Title: Dumpster
 ## Title-enUS: Dumpster
@@ -11,9 +11,9 @@
 ## X-Website: https://www.curseforge.com/wow/addons/dumpster-reborn
 ## X-Category: Inventory
 
-## Version: 803
-## X-Revision: 803
-## X-Date: 2019-06-07
+## Version: 804
+## X-Revision: 804
+## X-Date: 2020-07-05
 
 ## X-Localizations: enUS
 ## X-CompatibleLocales: enUS

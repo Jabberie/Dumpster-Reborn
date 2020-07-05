@@ -113,3 +113,9 @@
   - /wod
   - /legion
   - /bfa
+
+20190307
+* Bumped TOC
+* Refeshed ace libs
+* Guild Bank throttling workaround
+* Reagent Bank now works with /dout
