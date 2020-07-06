@@ -40,6 +40,7 @@ L["notsafeout"]		= "No bank frames visible, not safe to dump out!"
 L["notsafeonly"]	= "/only can't be used here"
 L["novendor"]		= "Can't find the buy/sell option! Is this a merchant?"
 L["notsafe"]		= "Not dumping because it's not safe"
+L["battlepet"]		= "Tooltip Search does not work with pets or toys"
 L["invalidparam"]	= function(X) return "Invalid parameter ["..X.."], cancelling"; end
 L["AllExist"]		= function(D,X,Y,Z) return D.." items dumped|r for "..X.."|r ("..Y.." requested, "..Z.." already exist)";end
 L["totaldumped"]	= function(X,Y,Z) return X.." items dumped|r for "..Y.."|r ("..Z.." requested)" end

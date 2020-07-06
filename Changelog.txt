@@ -119,3 +119,4 @@
 * Refeshed ace libs
 * Guild Bank throttling workaround
 * Reagent Bank now works with /dout
+* Error for pets/toys

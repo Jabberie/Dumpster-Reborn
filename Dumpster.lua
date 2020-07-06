@@ -17,6 +17,7 @@ local tt -- scanning tooltip
 local panel, helppanel
 
 local changeGuildTab = false
+local tooltipError = false
 
 local DumpsterGuildBank = ...
 local lower, gsub = string.lower, string.gsub
@@ -405,13 +406,13 @@ end
 
 function Dumpster:OkToDump(so)
 	if (not so.search) or (so.search=="") then
-		self:Print("OkToDump: ".. L.nothingtodump);
+		self:Print(L.nothingtodump);
 		return false
 	end
 
 	if so.only then
 		if Dumpster:AtTrade() or Dumpster:AtMerchant() then
-			self:Print("OkToDump: "..L.notsafeonly);
+			self:Print(L.notsafeonly);
 			return false
 		end
 	end
@@ -431,7 +432,7 @@ function Dumpster:OkToDump(so)
 		if Dumpster:AtMailSend() then
 			return true
 		end
-			self:Print("OkToDump: "..L.notsafein);
+			self:Print(L.notsafein);
 	else
 		if Dumpster:AtMail() then
 			MailFrameTab_OnClick(nil, 1)
@@ -439,7 +440,7 @@ function Dumpster:OkToDump(so)
 		if Dumpster:AtMailInbox() then
 			return true
 		end
-		self:Print("OkToDump: "..L.notsafeout);
+		self:Print(L.notsafeout);
 	end
 	return false
 end
@@ -654,7 +655,20 @@ function Dumpster:GetTooltipFromItem(item,so)
 
 	if DumpsterScanningTooltip:NumLines()==0 then
 		if superdebug then self:Print(L.debugTooltipFailed(so.where,so.bag,so.slot)); end
-		DumpsterScanningTooltip:SetHyperlink(item)
+
+
+		if ( strsub(item, 13, 21) == "battlepet" ) then -- |cff0070dd|Hbattlepet:868:1:3:158:10:12:0x0000000000000000|h[Pandaren Water Spirit]|h|r
+		 --	local _, speciesID, level, breedQuality, maxHealth, power, speed, battlePetID = strsplit(":", item);
+		 --	local link = "battlepet:"..speciesID..":"..level..":"..breedQuality..":"..maxHealth..":"..power..":"..speed..":"..battlePetID
+		 --	SetItemRef(link, item, DumpsterScanningTooltip)
+		 	tooltipError = true
+		else
+			DumpsterScanningTooltip:SetHyperlink(item)
+		end
+
+
+
+		
 	end
 
 	local mytext
@@ -1086,7 +1100,7 @@ function Dumpster:DumpIt(argsearch,arginout)
 	Dumpster:ParseOptions(so)
 
 	if not Dumpster:OkToDump(so) then
-		self:Print("DumpIt: "..L.notsafe);
+		self:Print(L.notsafe);
 		return
 	end
 
@@ -1147,7 +1161,7 @@ function Dumpster:DumpWithso(so)
 				elseif Dumpster:AtMerchant() then
 					dumpcount = Dumpster:DumpOutMerchant(so)
 				else
-					self:Print("DumpWithso: "..L.notsafeout)
+					self:Print(L.notsafeout)
 				end
 			end
 		end
@@ -1163,10 +1177,14 @@ function Dumpster:DumpWithso(so)
 				colorstring="|cFF00EEEE"	-- only dumped some
 			end
 			if so.only then
+				if tooltipError then self:Print(L.battlepet); end
 				self:Print(L.AllExist(colorstring..tostring(dumpcount),so.search,so.keepmaxcount,existingCount));
 			else
+				if tooltipError then self:Print(L.battlepet); end
 				self:Print(L.totaldumped(colorstring..tostring(dumpcount),so.search,so.keepmaxcount));
 			end
+
+			tooltipError = false
 
 			if (delayedinout=="") and (so.leftovers~="") then
 				so.search = so.leftovers
