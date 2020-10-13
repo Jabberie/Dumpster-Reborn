@@ -1360,8 +1360,8 @@ function Dumpster:showPanel()
         editbox:SetTextColor(.8,.8,.8)
         editbox:SetTextInsets(8,8,8,8)
         editbox:SetBackdrop({
-                bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
-                edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+                bgFile = [[Interface\\ChatFrame\\ChatFrameBackground]],
+                edgeFile = [[Interface\\Tooltips\\UI-Tooltip-Border]],
                 edgeSize = 16,
                 insets = {left = 4, right = 4, top = 4, bottom = 4}
         })
