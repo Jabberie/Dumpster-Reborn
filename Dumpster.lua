@@ -1352,21 +1352,21 @@ function Dumpster:showPanel()
         end)
 
 
-	editbox = CreateFrame("EditBox", "DumpsterEditBox", frame)
+	editbox = CreateFrame("EditBox", "DumpsterEditBox", frame,"UIPanelButtonTemplate")
         editbox:SetPoint("TOP", dropdown, "BOTTOM")
         editbox:SetPoint("LEFT", 5, 0)
         editbox:SetPoint("BOTTOMRIGHT", -5, 5)
         editbox:SetFontObject(GameFontNormal)
         editbox:SetTextColor(.8,.8,.8)
         editbox:SetTextInsets(8,8,8,8)
-        editbox:SetBackdrop({
-                bgFile = [[Interface\\ChatFrame\\ChatFrameBackground]],
-                edgeFile = [[Interface\\Tooltips\\UI-Tooltip-Border]],
-                edgeSize = 16,
-                insets = {left = 4, right = 4, top = 4, bottom = 4}
-        })
-        editbox:SetBackdropColor(.1,.1,.1,.3)
-        editbox:SetBackdropBorderColor(.5,.5,.5)
+    --    editbox:SetBackdrop({
+    --            bgFile = [[Interface\\ChatFrame\\ChatFrameBackground]],
+    --            edgeFile = [[Interface\\Tooltips\\UI-Tooltip-Border]],
+    --            edgeSize = 16,
+    --            insets = {left = 4, right = 4, top = 4, bottom = 4}
+    --    })
+    --  editbox:SetBackdropColor(.1,.1,.1,.3)
+    --  editbox:SetBackdropBorderColor(.5,.5,.5)
         editbox:SetMultiLine(true)
         editbox:SetAutoFocus(false)
 	if selected and selected~="" then
