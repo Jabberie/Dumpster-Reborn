@@ -56,7 +56,8 @@ L["dumpsetuse"]	= function(X,Y) return "Using set named ["..X.."] containing [".
 -- fix for account bound items  
 --L["bindBOA"]    = "Binds to account";        -- matches in-game text
 --L["bindBOA"]    = "Battle.net Account Bound";        -- matches in-game text
-L["bindBOA"]    = "Blizzard Account Bound";        -- matches in-game text 
+--L["bindBOA"]    = "Blizzard Account Bound";        -- matches in-game text 
+L["bindBOA"]    = "account";        -- matches in-game text, neevor 12/15/2022, very hacky 
 L["bindBOE"]	= ITEM_BIND_ON_EQUIP ;		-- matches in-game text
 L["bindBOU"]	= ITEM_BIND_ON_USE ;		-- matches in-game text
 L["bindBOP"]	= ITEM_BIND_ON_PICKUP ;		-- matches in-game text
@@ -67,13 +68,15 @@ L["notbound"]	= "not Soulbound";		-- doesn't match anything in-game
 
 L["AllExp"]    	= "All Expansions";
 L["classic"]	= 0 ;
-L["tbc"]		= 1 ;
-L["wotlk"]		= 2 ;
-L["cata"]		= 3 ;
-L["mop"]		= 4 ;
-L["wod"]		= 5 ;
-L["legion"]		= 6 ;
-L["bfa"]		= 7 ;
+L["tbc"]	= 1 ;
+L["wotlk"]	= 2 ;
+L["cata"]	= 3 ;
+L["mop"]	= 4 ;
+L["wod"]	= 5 ;
+L["legion"]	= 6 ;
+L["bfa"]	= 7 ;
+L["sl"]		= 8 ; -- neevor 12/15/2022
+L["df"]		= 9 ; -- neevor 12/15/2022
 
 local debugtext = "|cff7f0000 DEBUG |r"
 

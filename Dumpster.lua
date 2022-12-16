@@ -1,6 +1,6 @@
 Dumpster = LibStub("AceAddon-3.0"):NewAddon("Dumpster","AceConsole-3.0","AceEvent-3.0","AceTimer-3.0")
 
-local version = "v5.0"
+local version = "v6.0"
 local Dumpster = Dumpster
 --local pt = LibStub("LibPeriodicTable-3.1", true)
 --local gratuity = AceLibrary("Gratuity-2.0")
@@ -95,6 +95,8 @@ DumpsterGuildFrame:SetClampedToScreen(true)
 DumpsterGuildFrame:SetPoint("CENTER",0,0)
 DumpsterGuildFrame:RegisterEvent("GUILDBANKFRAME_OPENED")
 DumpsterGuildFrame:RegisterEvent("GUILDBANKFRAME_CLOSED")
+DumpsterGuildFrame:RegisterEvent("PLAYER_INTERACTION_MANAGER_FRAME_SHOW")
+DumpsterGuildFrame:RegisterEvent("GUILDBANKFRAME_CLOSED")
 DumpsterGuildFrame:RegisterEvent("ADDON_LOADED")
 DumpsterGuildFrame:Hide()
 
@@ -104,6 +106,8 @@ DumpsterGuildFrame:SetScript("OnEvent",function(s,e,a)
 		DumpsterGuildFrame:UnregisterEvent("ADDON_LOADED")
 	elseif e == "GUILDBANKFRAME_OPENED" then
 		DumpsterGuildFrame:Show()
+	elseif e == "PLAYER_INTERACTION_MANAGER_FRAME_SHOW" then
+		DumpsterGuildFrame:Show()		
 	elseif e == "GUILDBANKFRAME_CLOSED" then
 		DumpsterGuildFrame:SetScript("OnUpdate",nil)
 		DumpsterGuildFrame:Hide()
@@ -124,10 +128,11 @@ guildbank_queue = function(movementtype)
 				maytake = false
 				elapsed = 0
 				if DumpsterQueue[1] then -- as moved items' table entries are removed rather than set to nil, we simply need to check if the first entry exists
+					print(DumpsterQueue[1][1] ..", ".. DumpsterQueue[1][2])
 					if movementtype == "take" then
 						AutoStoreGuildBankItem(DumpsterQueue[1][1], DumpsterQueue[1][2])
 					else -- give
-						UseContainerItem(DumpsterQueue[1][1], DumpsterQueue[1][2])
+						C_Container.UseContainerItem(DumpsterQueue[1][1], DumpsterQueue[1][2]) -- neevor 12/15/2022
 					end
 					tremove(DumpsterQueue,1)
 					maytake = true
@@ -835,9 +840,9 @@ end
 
 function Dumpster:getMaxSlots(so)
 	if so.where=="bank" then
-		return GetContainerNumSlots(so.bag)
+		return  C_Container.GetContainerNumSlots(so.bag) -- neevor 12/15/2022
 	elseif so.where=="gbank" and so.inout =="in" then
-		return GetContainerNumSlots(so.bag)
+		return  C_Container.GetContainerNumSlots(so.bag) -- neevor 12/15/2022
 	elseif so.where=="gbank" and so.inout =="out" then
 		return 98
 	elseif so.where=="mail" then
@@ -853,9 +858,9 @@ end
 
 function Dumpster:getItemLink(so)
 	if so.where=="bank" then
-		return GetContainerItemLink(so.bag, so.slot)
+		return  C_Container.GetContainerItemLink(so.bag, so.slot) -- neevor 12/15/2022
 	elseif so.where=="gbank" and so.inout =="in" then
-		return GetContainerItemLink(so.bag, so.slot)
+		return  C_Container.GetContainerItemLink(so.bag, so.slot) -- neevor 12/15/2022
 	elseif so.where=="gbank" and so.inout =="out" then
 		return GetGuildBankItemLink(so.bag, so.slot)
 	elseif so.where=="mail" then
@@ -869,10 +874,10 @@ end
 
 function Dumpster:getNumInStack(so)
 	if so.where=="bank" then
-		local texture, count, locked, quality, readable = GetContainerItemInfo(so.bag, so.slot)
+		local texture, count, locked, quality, readable =  C_Container.GetContainerItemInfo(so.bag, so.slot) -- neevor 12/15/2022
 		if count then return count else return 1 end
 	elseif so.where=="gbank" and so.inout =="in" then
-		local texture, count, locked, quality, readable = GetContainerItemInfo(so.bag, so.slot)
+		local texture, count, locked, quality, readable =  C_Container.GetContainerItemInfo(so.bag, so.slot) -- neevor 12/15/2022
 		if count then return count else return 1 end		
 	elseif so.where=="gbank" and so.inout =="out" then
 		local texture, count, locked = GetGuildBankItemInfo(so.bag, so.slot)
@@ -890,7 +895,7 @@ end
 
 function Dumpster:DumpItem(so)
 	if so.where=="bank" then
-		UseContainerItem(so.bag, so.slot)
+		 C_Container.UseContainerItem(so.bag, so.slot) -- neevor 12/15/2022
 	elseif so.where=="gbank" then
 		tinsert(DumpsterQueue,{so.bag, so.slot})
 	--	AutoStoreGuildBankItem(so.bag, so.slot)
@@ -922,7 +927,10 @@ function Dumpster:DumpOutAllBankBags(so)
 
 	if numBankBags>0 then
 		local x
-		for x=(NUM_BAG_SLOTS+1), ((NUM_BAG_SLOTS+1)+numBankBags-1) do
+--		for x=(NUM_BAG_SLOTS+1), ((NUM_BAG_SLOTS+1)+numBankBags-1) do -- neevor 12/15/2022
+--		there are 4 bag slots (1-4), and the banks slots (5-11) started right after that until Dragonflight
+--		now the ReagentBag is 5, and the bank bags are 6-12
+		for x=(6), (6+numBankBags-1) do
 			so.bag=x
 			dumpcount = dumpcount + Dumpster:NewDumpBag(so)
 		end
@@ -976,6 +984,11 @@ function Dumpster:DumpIn(so)
 	local x
 	for x = 0, NUM_BAG_SLOTS do
 		so.bag = x
+		dumpcount = dumpcount + Dumpster:NewDumpBag(so)
+	end
+	-- reagent bag (5) -- neevor 12/15/2022
+	if 0 ~= C_Container.GetContainerNumSlots(5) then
+		so.bag = 5
 		dumpcount = dumpcount + Dumpster:NewDumpBag(so)
 	end
 	if Dumpster:AtMailSend() and so.to~="" then
@@ -1351,24 +1364,16 @@ function Dumpster:showPanel()
 		InterfaceOptionsFrame_OpenToCategory(Dumpster.helppanel);
         end)
 
-
-	editbox = CreateFrame("EditBox", "DumpsterEditBox", frame,"UIPanelButtonTemplate")
+	editbox = CreateFrame("EditBox", "DumpsterEditBox", frame,"InputBoxTemplate")
         editbox:SetPoint("TOP", dropdown, "BOTTOM")
         editbox:SetPoint("LEFT", 5, 0)
         editbox:SetPoint("BOTTOMRIGHT", -5, 5)
         editbox:SetFontObject(GameFontNormal)
         editbox:SetTextColor(.8,.8,.8)
         editbox:SetTextInsets(8,8,8,8)
-    --    editbox:SetBackdrop({
-    --            bgFile = [[Interface\\ChatFrame\\ChatFrameBackground]],
-    --            edgeFile = [[Interface\\Tooltips\\UI-Tooltip-Border]],
-    --            edgeSize = 16,
-    --            insets = {left = 4, right = 4, top = 4, bottom = 4}
-    --    })
-    --  editbox:SetBackdropColor(.1,.1,.1,.3)
-    --  editbox:SetBackdropBorderColor(.5,.5,.5)
         editbox:SetMultiLine(true)
         editbox:SetAutoFocus(false)
+        editbox:SetHeight(150)
 	if selected and selected~="" then
         	editbox:SetText(dumpset[selected])
 	end
