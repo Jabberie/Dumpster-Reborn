@@ -1,4 +1,4 @@
-## Interface: 100200
+## Interface: 11404
 
 ## Title: Dumpster
 ## Title-enUS: Dumpster

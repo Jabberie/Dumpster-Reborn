@@ -1,6 +1,6 @@
 Dumpster = LibStub("AceAddon-3.0"):NewAddon("Dumpster","AceConsole-3.0","AceEvent-3.0","AceTimer-3.0")
 
-local version = "v6.0"
+local version = "v7.0"
 local Dumpster = Dumpster
 --local pt = LibStub("LibPeriodicTable-3.1", true)
 --local gratuity = AceLibrary("Gratuity-2.0")
@@ -10,7 +10,7 @@ local superdebug = false;
 
 local delayedso="";
 local delayedinout="";
-local delayedWaitMail=2.0;
+local delayedWaitMail=0.5;
 local delayedWaitGbank=3.0;
 
 local tt -- scanning tooltip
@@ -42,6 +42,19 @@ SetGuildBankTab = function(tab)
 	end
 end
 
+-- ############# what version are we in? 
+
+Dumpster.WOWClassic = false
+Dumpster.WOWBCClassic = false
+Dumpster.WOWWotLKClassic = false
+Dumpster.WOWCataClassic = false
+Dumpster.WOWRetail = false
+
+if _G.WOW_PROJECT_ID == _G.WOW_PROJECT_CLASSIC then Dumpster.WOWClassic = true end
+if _G.WOW_PROJECT_ID == _G.WOW_PROJECT_BURNING_CRUSADE_CLASSIC then Dumpster.WOWBCClassic = true end
+if _G.WOW_PROJECT_ID == _G.WOW_PROJECT_WRATH_CLASSIC then Dumpster.WOWWotLKClassic = true end
+if _G.WOW_PROJECT_ID == _G.WOW_PROJECT_CATACLYSM_CLASSIC then Dumpster.WOWCataClassic = true end
+if _G.WOW_PROJECT_ID == _G.WOW_PROJECT_MAINLINE then Dumpster.WOWRetail = true end
 
 -- ############# addon initialization
 
@@ -114,37 +127,51 @@ DumpsterGuildFrame:SetScript("OnEvent",function(s,e,a)
 	end
 end)
 
+local function IsGuildBankFrameOpen()
+    return GuildBankFrame and GuildBankFrame:IsVisible()
+end
+
 -- Guild throttling workaround
 DumpsterQueue = {}
 guildbank_queue = function(movementtype)
-	wait = 0.5
-	elapsed = 0
-	maytake = true
-	DumpsterGuildFrame:SetScript("OnUpdate", function(self,e)
-		if maytake then
-			elapsed = elapsed + e
-			if movementtype == "give" then delay = 2*wait else delay = wait end
-			if elapsed > delay and maytake then
-				maytake = false
-				elapsed = 0
-				if DumpsterQueue[1] then -- as moved items' table entries are removed rather than set to nil, we simply need to check if the first entry exists
-					print(DumpsterQueue[1][1] ..", ".. DumpsterQueue[1][2])
-					if movementtype == "take" then
-						AutoStoreGuildBankItem(DumpsterQueue[1][1], DumpsterQueue[1][2])
-					else -- give
-						C_Container.UseContainerItem(DumpsterQueue[1][1], DumpsterQueue[1][2]) -- neevor 12/15/2022
-					end
-					tremove(DumpsterQueue,1)
-					maytake = true
-				else
-					DumpsterGuildFrame:SetScript("OnUpdate",nil)
-					changeGuildTab = true
-					log("Queue Completed")
-				end
-			end
-		end
-	end)
+    wait = 0.5
+    elapsed = 0
+    maytake = true
+    DumpsterGuildFrame:SetScript("OnUpdate", function(self, e)
+        if maytake then
+            elapsed = elapsed + e
+            if movementtype == "give" then delay = 2 * wait else delay = wait end
+            if elapsed > delay and maytake then
+                maytake = false
+                elapsed = 0
+
+                -- Check if the guild bank is still open
+                if not IsGuildBankFrameOpen() then
+                    DumpsterGuildFrame:SetScript("OnUpdate", nil)
+                    changeGuildTab = true
+                    if debug then log("Queue Aborted: Guild Bank Closed") end
+                    return
+                end
+
+                if DumpsterQueue[1] then -- as moved items' table entries are removed rather than set to nil, we simply need to check if the first entry exists
+                    if debug then print(DumpsterQueue[1][1] .. ", " .. DumpsterQueue[1][2]) end
+                    if movementtype == "take" then
+                        AutoStoreGuildBankItem(DumpsterQueue[1][1], DumpsterQueue[1][2])
+                    else -- give
+                        C_Container.UseContainerItem(DumpsterQueue[1][1], DumpsterQueue[1][2]) -- neevor 12/15/2022
+                    end
+                    tremove(DumpsterQueue, 1)
+                    maytake = true
+                else
+                    DumpsterGuildFrame:SetScript("OnUpdate", nil)
+                    changeGuildTab = true
+                    if debug then log("Queue Completed") end
+                end
+            end
+        end
+    end)
 end
+
 
 
 -- ############# Event processing
@@ -168,43 +195,53 @@ function Dumpster:BANKFRAME_OPENED()
 	Dumpster:Nowhere(); atBank=true;
 	if debug then self:Print(L.debugevent("BANKFRAME_OPENED")); end
 end
+
 function Dumpster:BANKFRAME_CLOSED()
 	Dumpster:Nowhere();
 	if debug then self:Print(L.debugevent("BANKFRAME_CLOSED")); end
 end
+
 function Dumpster:GUILDBANKFRAME_OPENED()
 	Dumpster:Nowhere(); atGuildBank=true;
 	if debug then self:Print(L.debugevent("GUILDBANKFRAME_OPENED")); end	
 end
+
 function Dumpster:GUILDBANKFRAME_CLOSED()
 	Dumpster:Nowhere();
 	if debug then self:Print(L.debugevent("GUILDBANKFRAME_CLOSED")); end
 end
+
 function Dumpster:MAIL_SHOW()
 	Dumpster:Nowhere(); atMailbox=true;
 	if debug then self:Print(L.debugevent("MAIL_SHOW")); end
 end
+
 function Dumpster:MAIL_CLOSED()
 	Dumpster:Nowhere();
 	if debug then self:Print(L.debugevent("MAIL_CLOSED")); end
 end
+
 function Dumpster:MAIL_INBOX_UPDATE()
 	Dumpster:Nowhere();
 	if debug then self:Print(L.debugevent("MAIL_INBOX_UPDATE")); end
 end
+
 function Dumpster:MERCHANT_SHOW()
 	Dumpster:Nowhere(); atMerchant=true;
 	Dumpster:ProcessDelayed();
 	if debug then self:Print(L.debugevent("MERCHANT_SHOW")); end
 end
+
 function Dumpster:MERCHANT_CLOSED()
 	Dumpster:Nowhere();
 	if debug then self:Print(L.debugevent("MERCHANT_CLOSED")); end
 end
+
 function Dumpster:TRADE_SHOW()
 	Dumpster:Nowhere(); atTrade=true;
 	if debug then self:Print(L.debugevent("TRADE_SHOW")); end
 end
+
 function Dumpster:TRADE_CLOSED()
 	Dumpster:Nowhere();
 	if debug then self:Print(L.debugevent("TRADE_CLOSED")); end
@@ -217,6 +254,7 @@ function Dumpster:AtMail()
 	if debug and atMailbox then self:Print(L.debugatMailboxflag); end
 	return atMailbox
 end
+
 function Dumpster:AtMailInbox()
 	if (MailFrame) and (MailFrame:IsVisible()) then
 		if InboxPrevPageButton and InboxPrevPageButton:IsVisible() then
@@ -228,6 +266,7 @@ function Dumpster:AtMailInbox()
 	if debug and atMailbox then self:Print(L.debugatMailboxflag); end
 	return atMailbox
 end
+
 function Dumpster:AtMailSend()
 	if SendMailFrame and SendMailFrame:IsVisible() then
 		if InboxPrevPageButton and InboxPrevPageButton:IsVisible() then
@@ -240,14 +279,16 @@ function Dumpster:AtMailSend()
 	if debug and atMailbox then self:Print(L.debugatMailboxflag); end
 	return atMailbox
 end
+
 function Dumpster:AtGossip()
 	if GossipFrame and GossipFrame:IsVisible() then
---GossipTitleButton1
+		--GossipTitleButton1
 		if debug then self:Print(L.debugatGossip); end
 		return true
 	end
 	return false
 end
+
 function Dumpster:AtMerchant()
 	if MerchantFrame and MerchantFrame:IsVisible() then
  -- As it turns out, you can sell to the buyback page.  You shouldn't be able to, but whatever. One less test.
@@ -259,6 +300,7 @@ function Dumpster:AtMerchant()
 	if debug and atMerchant then self:Print(L.debugatMerchantflag); end
 	return atMerchant
 end
+
 function Dumpster:AtTrade()
 	if TradeFrame and TradeFrame:IsVisible() then
 		if debug then self:Print(L.debugatMerchant); end
@@ -267,6 +309,7 @@ function Dumpster:AtTrade()
 	if debug and atTrade then self:Print(L.debugatTradeflag); end
 	return atTrade
 end
+
 function Dumpster:AtBank()
 	if BankFrame and BankFrame:IsVisible() then
 		if debug then self:Print(L.debugatBank); end
@@ -275,6 +318,7 @@ function Dumpster:AtBank()
 	if debug and atBank then self:Print(L.debugatBankflag); end
 	return atBank
 end
+
 function Dumpster:AtGuildBank()
 	if GuildBankFrame and GuildBankFrame:IsVisible() then
 		if debug then self:Print(L.debugatGuildBank); end
@@ -293,6 +337,7 @@ function Dumpster:ProcessDelayed()
 		Dumpster:DumpWithso(delayedso);
 	end
 end
+
 
 -- ############# slashcommand processing
 
@@ -372,7 +417,6 @@ function Dumpster:DumpSetList(arrrrgs)
 		self:Print(tostring(x)..". "..setname..": "..setdetails)
 	end
 end
-
 
 -- ############# utility functions
 
@@ -693,7 +737,6 @@ function Dumpster:GetTooltipFromItem(item,so)
 	return text
 end
 
-
 function Dumpster:GetExpacID(item)
 	local itemName, _, _, _, _, _, _, _, _, _, _, _, _, _, expacID  = GetItemInfo(item)
 	return expacID
@@ -766,7 +809,6 @@ function Dumpster:CheckBindandTooltip(item,so)
 	else
 		return true -- no tooltip so so.except doesn't apply
 	end
-
 end
 
 function Dumpster:CheckSearchText(item,so)
@@ -873,24 +915,43 @@ function Dumpster:getItemLink(so)
 end
 
 function Dumpster:getNumInStack(so)
-	if so.where=="bank" then
-		local texture, count, locked, quality, readable =  C_Container.GetContainerItemInfo(so.bag, so.slot) -- neevor 12/15/2022
-		if count then return count else return 1 end
-	elseif so.where=="gbank" and so.inout =="in" then
-		local texture, count, locked, quality, readable =  C_Container.GetContainerItemInfo(so.bag, so.slot) -- neevor 12/15/2022
-		if count then return count else return 1 end		
-	elseif so.where=="gbank" and so.inout =="out" then
-		local texture, count, locked = GetGuildBankItemInfo(so.bag, so.slot)
-		if count then return count else return 1 end		
-	elseif so.where=="mail" then
-		local name, itemTexture, count, quality, canUse = GetInboxItem(so.bag, so.slot)
-		if count then return count else return 1 end
-	elseif so.where=="merchant" then
-		local name, texture, price, quantity, numAvailable, isUsable, extendedCost = GetMerchantItemInfo(so.slot)
-		if quantity then return quantity else return 1 end
-	else
-		return 1
-	end
+    local count
+
+    if so.where == "bank" then
+        if Dumpster.WOWRetail then
+            local texture, c, locked, quality, readable = C_Container.GetContainerItemInfo(so.bag, so.slot)  -- neevor 12/15/2022
+            count = c
+        else
+            local itemInfo = C_Container.GetContainerItemInfo(so.bag, so.slot) -- 졸부김 08/12/2023
+            count = itemInfo.stackCount -- 졸부김 08/12/2023
+        end
+    elseif so.where == "gbank" and so.inout == "in" then
+        if Dumpster.WOWRetail then
+            local texture, c, locked, quality, readable = C_Container.GetContainerItemInfo(so.bag, so.slot)  -- neevor 12/15/2022
+            count = c
+        else
+            local itemInfo = C_Container.GetContainerItemInfo(so.bag, so.slot) -- 졸부김 08/12/2023
+            count = itemInfo.stackCount -- 졸부김 08/12/2023
+        end
+    elseif so.where == "mail" then
+        if Dumpster.WOWRetail then
+            local name, itemTexture, c, quality, canUse = GetInboxItem(so.bag, so.slot)
+            count = c
+        else
+            local name, itemid, itemTexture, c, quality, canUse = GetInboxItem(so.bag, so.slot) -- 졸부김 08/12/2023
+            count = c
+        end
+    elseif so.where == "gbank" and so.inout == "out" then
+        local texture, c, locked = GetGuildBankItemInfo(so.bag, so.slot)
+        count = c
+    elseif so.where == "merchant" then
+        local name, texture, price, quantity, numAvailable, isUsable, extendedCost = GetMerchantItemInfo(so.slot)
+        count = quantity
+    else
+        count = 1
+    end
+
+    return count
 end
 
 function Dumpster:DumpItem(so)
@@ -915,37 +976,35 @@ function Dumpster:DumpOutCurrentGbankTab(so)
 end
 
 function Dumpster:DumpOutAllBankBags(so)
-	so.where="bank"
+    so.where = "bank"
 
-	-- Dump main bag
-	so.bag = BANK_CONTAINER; -- BANK_CONTAINER = -1
-	local dumpcount = Dumpster:NewDumpBag(so);
-	
-	-- Dump purchaseable bags
-	local numBankBags = GetNumBankSlots()
-	if debug then self:Print(L.debugNumBankBags(numBankBags)); end
+    -- Dump main bag
+    so.bag = BANK_CONTAINER; -- BANK_CONTAINER = -1
+    local dumpcount = Dumpster:NewDumpBag(so);
 
-	if numBankBags>0 then
-		local x
---		for x=(NUM_BAG_SLOTS+1), ((NUM_BAG_SLOTS+1)+numBankBags-1) do -- neevor 12/15/2022
---		there are 4 bag slots (1-4), and the banks slots (5-11) started right after that until Dragonflight
---		now the ReagentBag is 5, and the bank bags are 6-12
-		for x=(6), (6+numBankBags-1) do
-			so.bag=x
-			dumpcount = dumpcount + Dumpster:NewDumpBag(so)
-		end
-	end
+    -- Dump purchaseable bags
+    local numBankBags = GetNumBankSlots()
+    if debug then self:Print(L.debugNumBankBags(numBankBags)); end
 
-	reagentBank = IsReagentBankUnlocked()
+    local startIndex = Dumpster.WOWRetail and 6 or 5  -- Choose the start index based on environment
 
-	if reagentBank then
-		BankFrameTab2:Click()
-		so.bag=-3
-		dumpcount = dumpcount + Dumpster:NewDumpBag(so)
-		BankFrameTab1:Click()
-	end
+    for x = startIndex, (startIndex + numBankBags - 1) do
+        so.bag = x
+        dumpcount = dumpcount + Dumpster:NewDumpBag(so)
+    end
 
-	return dumpcount
+    -- Use reagent bank section only if it's retail
+    if Dumpster.WOWRetail then
+        reagentBank = IsReagentBankUnlocked()
+        if reagentBank then
+            BankFrameTab2:Click()
+            so.bag = -3
+            dumpcount = dumpcount + Dumpster:NewDumpBag(so)
+            BankFrameTab1:Click()
+        end
+    end
+
+    return dumpcount
 end
 
 function Dumpster:DumpOutAllMail(so)
@@ -979,24 +1038,30 @@ function Dumpster:DumpOutMerchant(so)
 end
 
 function Dumpster:DumpIn(so)
-	-- so.where=="bank"
-	local dumpcount = 0
-	local x
-	for x = 0, NUM_BAG_SLOTS do
-		so.bag = x
-		dumpcount = dumpcount + Dumpster:NewDumpBag(so)
-	end
-	-- reagent bag (5) -- neevor 12/15/2022
-	if 0 ~= C_Container.GetContainerNumSlots(5) then
-		so.bag = 5
-		dumpcount = dumpcount + Dumpster:NewDumpBag(so)
-	end
-	if Dumpster:AtMailSend() and so.to~="" then
-		SendMailNameEditBox:SetText(so.to)
-		SendMailSubjectEditBox:SetFocus()
-	end
-	return dumpcount
+    -- so.where=="bank"
+    local dumpcount = 0
+    local x
+    for x = 0, NUM_BAG_SLOTS do
+        so.bag = x
+        dumpcount = dumpcount + Dumpster:NewDumpBag(so)
+    end
+
+    if Dumpster.WOWRetail then
+        -- reagent bag (5) -- neevor 12/15/2022
+        if 0 ~= C_Container.GetContainerNumSlots(5) then
+            so.bag = 5
+            dumpcount = dumpcount + Dumpster:NewDumpBag(so)
+        end
+    end
+
+    if Dumpster:AtMailSend() and so.to ~= "" then
+        SendMailNameEditBox:SetText(so.to)
+        SendMailSubjectEditBox:SetFocus()
+    end
+
+    return dumpcount
 end
+
 
 function Dumpster:DumpAllGbankTabs(so)
 	so.where = "gbank"
