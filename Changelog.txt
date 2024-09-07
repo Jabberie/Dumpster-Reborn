@@ -124,3 +124,10 @@
 20221215
 * updated reagent bag
 * udpated guildbank event
+
+20231208
+* update to work with classic and classic era
+
+20240907
+* inteface panel changes
+* dump out from warband bank

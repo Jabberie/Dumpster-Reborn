@@ -1,6 +1,9 @@
 Dumpster = LibStub("AceAddon-3.0"):NewAddon("Dumpster","AceConsole-3.0","AceEvent-3.0","AceTimer-3.0")
 
-local version = "v7.0"
+local categoryDumpster, layoutDumpster -- neevor: Settings fix 11.x.x
+local categoryHelp, layoutHelp -- neevor: Settings fix 11.x.x
+
+local version = "v11"
 local Dumpster = Dumpster
 --local pt = LibStub("LibPeriodicTable-3.1", true)
 --local gratuity = AceLibrary("Gratuity-2.0")
@@ -131,6 +134,8 @@ local function IsGuildBankFrameOpen()
     return GuildBankFrame and GuildBankFrame:IsVisible()
 end
 
+
+
 -- Guild throttling workaround
 DumpsterQueue = {}
 guildbank_queue = function(movementtype)
@@ -172,12 +177,26 @@ guildbank_queue = function(movementtype)
     end)
 end
 
+--  ########################################################
 
+local function IsAccountBankPanelOpen()
+    return BankFrame and AccountBankPanel:IsVisible()
+end
+
+function Dumpster:AtAccountBank()
+	if BankFrame and AccountBankPanel:IsVisible() then
+		if debug then self:Print(L.debugatAccountBank); end
+		return true
+	end
+	if debug and atAccountBank then self:Print(L.debugatAccountBankflag); end
+	return AtAccountBank
+end
 
 -- ############# Event processing
 
 local atBank = false
 local atGuildBank = false
+local atAccountBank = false
 local atMailbox = false
 local atMerchant = false
 local atTrade = false
@@ -186,13 +205,14 @@ local atTrade = false
 function Dumpster:Nowhere()
 	atBank = false
 	atGuildBank = false
+	atAccountBank = false
 	atMailbox = false
 	atMerchant = false
 	atTrade = false
 end
 
 function Dumpster:BANKFRAME_OPENED()
-	Dumpster:Nowhere(); atBank=true;
+	Dumpster:Nowhere(); atBank=true; atAccountBank=true;
 	if debug then self:Print(L.debugevent("BANKFRAME_OPENED")); end
 end
 
@@ -363,10 +383,22 @@ function Dumpster:DumpsterDump(arg) -- /dumpster
 			superdebug=true
 		end	
 	elseif arg=="extrahelp" or arg=="help" then
-		InterfaceOptionsFrame_OpenToCategory(Dumpster.helppanel);
+		-- neevor: Settings fix 11.x.x
+		if Dumpster.WOWRetail then
+			Settings.OpenToCategory("Dumpster")
+		else
+			InterfaceOptionsFrame_OpenToCategory(Dumpster.helppanel); 
+		end
+
 	else
 		-- self:Print(L.usage);
-		InterfaceOptionsFrame_OpenToCategory(Dumpster.panel);
+		 -- neevor: Settings fix 11.x.x
+		if Dumpster.WOWRetail then
+			Settings.OpenToCategory("Dumpster")
+		else
+			InterfaceOptionsFrame_OpenToCategory(Dumpster.panel);
+		end
+		
 	end
 end
 
@@ -565,7 +597,8 @@ function Dumpster:ParseOptions(so)
 	local multiFlags = {
 		bind = { account="bindBOA", use="bindBOU", equip="bindBOE", pickup="bindBOP", 
 		boa="bindBOA", bou="bindBOU", boe="bindBOE", bop="bindBOP",
-		soulbound="soulbound", sb="soulbound", nb="notbound", notbound="notbound" },
+		soulbound="soulbound", sb="soulbound", nb="notbound", notbound="notbound",
+		warbound="Warbound", wb="Warbound", btw="Warbound"}, -- neevor: Warbound flags
 		quality = { poor=0, common=1, uncommon=2, rare=3, epic=4, legendary=5, artifact=6, 
 		grey=0, gray=0, white=1, green=2, blue=3, purple=4, orange=5, red=6 },
 		stackfull = { full="full", partial="partial" },
@@ -887,6 +920,8 @@ function Dumpster:getMaxSlots(so)
 		return  C_Container.GetContainerNumSlots(so.bag) -- neevor 12/15/2022
 	elseif so.where=="gbank" and so.inout =="out" then
 		return 98
+	elseif so.where=="abank" and so.inout =="in" then
+		return C_Container.GetContainerNumSlots(so.bag)	
 	elseif so.where=="mail" then
  --		local packageIcon, stationeryIcon, sender, subject, money, CODAmount, daysLeft, itemCount, wasRead, wasReturned, textCreated, canReply, isGM, itemQuantity = GetInboxHeaderInfo(so.bag)
  --		if itemCount then return itemCount else return 0 end
@@ -905,6 +940,8 @@ function Dumpster:getItemLink(so)
 		return  C_Container.GetContainerItemLink(so.bag, so.slot) -- neevor 12/15/2022
 	elseif so.where=="gbank" and so.inout =="out" then
 		return GetGuildBankItemLink(so.bag, so.slot)
+	elseif so.where=="abank" then
+		return  C_Container.GetContainerItemLink(so.bag, so.slot) 		
 	elseif so.where=="mail" then
 		return GetInboxItemLink(so.bag, so.slot)
 	elseif so.where=="merchant" then
@@ -960,6 +997,8 @@ function Dumpster:DumpItem(so)
 	elseif so.where=="gbank" then
 		tinsert(DumpsterQueue,{so.bag, so.slot})
 	--	AutoStoreGuildBankItem(so.bag, so.slot)
+	elseif so.where=="abank" then
+		C_Container.UseContainerItem(so.bag, so.slot)
 	elseif so.where=="mail" then
 		TakeInboxItem(so.bag, so.slot)
 	elseif so.where=="merchant" then
@@ -1041,6 +1080,7 @@ function Dumpster:DumpIn(so)
     -- so.where=="bank"
     local dumpcount = 0
     local x
+
     for x = 0, NUM_BAG_SLOTS do
         so.bag = x
         dumpcount = dumpcount + Dumpster:NewDumpBag(so)
@@ -1225,6 +1265,8 @@ function Dumpster:DumpWithso(so)
 			if so.inout=="in" then
 				if Dumpster:AtGuildBank() then
 					so.where = "gbank"
+				elseif Dumpster:AtAccountBank() then
+					so.where = "abank"
 				else
 					so.where = "bank"
 				end
@@ -1232,6 +1274,8 @@ function Dumpster:DumpWithso(so)
 			elseif so.inout=="out" then
 				if Dumpster:AtGuildBank() then
 					dumpcount = Dumpster:DumpOutCurrentGbankTab(so)
+				elseif Dumpster:AtAccountBank() then
+					dumpcount = Dumpster:DumpOutAccountBank(so)					
 				elseif Dumpster:AtBank() then
 					dumpcount = Dumpster:DumpOutAllBankBags(so)
 				elseif Dumpster:AtMailInbox() then
@@ -1307,6 +1351,7 @@ function Dumpster:showHelpPanel()
 	frame:SetScript("OnShow", nil)
 end
 
+
 function Dumpster:showPanel()
 	local frame = Dumpster.panel
 	local dropdown, editbox, newbutt, delbutt, helpbutt
@@ -1369,7 +1414,7 @@ function Dumpster:showPanel()
 		hideOnEscape = 1
 	};
 
-	local title = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	title = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
         title:SetPoint("TOPLEFT", frame, "TOPLEFT", 15, -15)
         title:SetPoint("BOTTOMRIGHT", frame, "TOPRIGHT", 10, -45)
         title:SetJustifyH("LEFT")
@@ -1377,23 +1422,23 @@ function Dumpster:showPanel()
         title:SetText("Dumpster")
 
 
-	local dropdownlabel = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+	dropdownlabel = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         dropdownlabel:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -10)
-        dropdownlabel:SetText("Set")
+        dropdownlabel:SetText("Set:")
         dropdownlabel:SetHeight(15)
-        dropdownlabel:SetWidth(20)
+        dropdownlabel:SetWidth(25)
 
 	dropdown = CreateFrame("Frame", "DumpsterDropDown", frame, "UIDropDownMenuTemplate")
         dropdown:EnableMouse(true)
         dropdown:SetPoint("TOPLEFT", dropdownlabel, "TOPRIGHT")
         UIDropDownMenu_Initialize(dropdown, initdropdown)
-	for k, v in pairs(dumpset) do
-		selected = k
-	end
+		for k, v in pairs(dumpset) do
+			selected = k
+		end
         UIDropDownMenu_SetSelectedValue(dropdown, selected)
         UIDropDownMenu_SetWidth(dropdown, 160)
         UIDropDownMenu_JustifyText(dropdown, "LEFT")
-	DumpsterDropDownLeft:SetHeight(50)
+		DumpsterDropDownLeft:SetHeight(50)
         DumpsterDropDownMiddle:SetHeight(50)
         DumpsterDropDownRight:SetHeight(50)
         DumpsterDropDownButton:SetPoint("TOPRIGHT", DumpsterDropDownRight, "TOPRIGHT", -16, -12)
@@ -1426,10 +1471,27 @@ function Dumpster:showPanel()
         helpbutt:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -5, -5)
         helpbutt:SetScript("OnClick", function()
 		-- StaticPopup_Show("DUMPSTER_HELP");
-		InterfaceOptionsFrame_OpenToCategory(Dumpster.helppanel);
-        end)
+		-- neevor: Settings fix 11.x.x
+		if Dumpster.WOWRetail then
+			Settings.OpenToCategory(categoryHelp.ID)
+		else
+			InterfaceOptionsFrame_OpenToCategory(Dumpster.helppanel); 
+		end
+	end)
 
-	editbox = CreateFrame("EditBox", "DumpsterEditBox", frame,"InputBoxTemplate")
+	local backdropInfo =
+	{
+	    bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
+	    edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
+	 	tile = true,
+	 	tileEdge = true,
+	 	tileSize = 8,
+	 	edgeSize = 8,
+	 	insets = { left = 1, right = 1, top = 1, bottom = 1 },
+	}
+
+	editbox = CreateFrame("EditBox", "DumpsterEditBox", frame, "BackdropTemplate")
+
         editbox:SetPoint("TOP", dropdown, "BOTTOM")
         editbox:SetPoint("LEFT", 5, 0)
         editbox:SetPoint("BOTTOMRIGHT", -5, 5)
@@ -1438,28 +1500,65 @@ function Dumpster:showPanel()
         editbox:SetTextInsets(8,8,8,8)
         editbox:SetMultiLine(true)
         editbox:SetAutoFocus(false)
-        editbox:SetHeight(150)
-	if selected and selected~="" then
-        	editbox:SetText(dumpset[selected])
-	end
+        editbox:SetHeight(5) 
+        editbox:SetBackdrop(backdropInfo)    
+
+
+		if selected and selected~="" then
+	        	editbox:SetText(dumpset[selected])
+		end
 	
         editbox:SetScript("OnEditFocusLost", focuslost)
         editbox:SetScript("OnEscapePressed", editbox.ClearFocus)
+
 
 	frame:SetScript("OnShow", nil)
 end
 
 function Dumpster:SetUpInterfaceOptions()
-	Dumpster.panel = CreateFrame("FRAME", "DumpsterPanel", UIParent)
-	Dumpster.panel.name = "Dumpster "..version
-	-- Dumpster.panel.parent = ""
-	Dumpster.panel:SetScript("OnShow",Dumpster.showPanel)
-	InterfaceOptions_AddCategory(Dumpster.panel)
+    -- Create the main panel for the addon
+    Dumpster.panel = CreateFrame("FRAME", "DumpsterPanel", UIParent, "BackdropTemplate")
+    Dumpster.panel.name = "Dumpster "..version
+    Dumpster.panel:SetScript("OnShow", function(self)
+        Dumpster.showPanel()
+    end)
+    
+    if Dumpster.WOWRetail then
+        -- Register the main category
+        local categoryDumpster, layoutDumpster = Settings.RegisterCanvasLayoutCategory(Dumpster.panel, Dumpster.panel.name)
+        categoryDumpster.ID = Dumpster.panel.name
+        Settings.RegisterAddOnCategory(categoryDumpster)
 
-	Dumpster.helppanel = CreateFrame("FRAME", "DumpsterPanel", UIParent)
-	Dumpster.helppanel.name = "Usage"
-	Dumpster.helppanel.parent = Dumpster.panel.name
-	Dumpster.helppanel:SetScript("OnShow",Dumpster.showHelpPanel)
-	InterfaceOptions_AddCategory(Dumpster.helppanel)
+        -- Create the help panel as a subcategory
+        Dumpster.helppanel = CreateFrame("FRAME", "DumpsterHelpPanel", UIParent, "BackdropTemplate")
+        Dumpster.helppanel.name = "Usage"
+        Dumpster.helppanel.parent = Dumpster.panel.name
+        Dumpster.helppanel:SetScript("OnShow", function(self)
+            Dumpster.showHelpPanel()
+        end)
+
+        -- Register the help panel as a subcategory
+        local categoryHelp = Settings.RegisterCanvasLayoutSubcategory(categoryDumpster, Dumpster.helppanel, Dumpster.helppanel.name)
+        categoryHelp.ID = Dumpster.helppanel.name
+        Settings.RegisterAddOnCategory(categoryHelp)
+    else
+        -- Fallback for WoW Classic or earlier versions using InterfaceOptions
+        InterfaceOptions_AddCategory(Dumpster.panel) 
+        Dumpster.helppanel = CreateFrame("FRAME", "DumpsterHelpPanel", UIParent, "BackdropTemplate")
+        Dumpster.helppanel.name = "Usage"
+        Dumpster.helppanel.parent = Dumpster.panel.name
+        Dumpster.helppanel:SetScript("OnShow", function(self)
+            Dumpster.showHelpPanel()
+        end)
+        InterfaceOptions_AddCategory(Dumpster.helppanel)
+    end
 end
+
+
 -- ############# Expansion
+
+function Dumpster:DumpOutAccountBank(so)
+	so.where="bank"
+	so.bag=13
+	return Dumpster:NewDumpBag(so)
+end

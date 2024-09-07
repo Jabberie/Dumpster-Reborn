@@ -1,4 +1,4 @@
-## Interface: 110200
+## Interface: 40305
 
 ## Title: Dumpster
 ## Title-enUS: Dumpster
@@ -11,8 +11,8 @@
 ## X-Website: https://www.curseforge.com/wow/addons/dumpster-reborn
 ## X-Category: Inventory
 
-## Version: 1102
-## X-Revision: 1102
+## Version: 40305
+## X-Revision: 40305
 ## X-Date: 2024-09-07
 
 ## X-Localizations: enUS

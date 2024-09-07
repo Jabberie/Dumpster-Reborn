@@ -21,6 +21,7 @@ Qualifiers can be:\
           /poor /common /uncommon /rare /epic /legendary /artifact\
 - bind: /boa /boe /bop /bou /bound /notbound\
         /account /equip /pickup /use /soulbound\
+       /warbound /wb/ btw\
 - expansion: /classic /tbc /wotlk /cata /mop /wod /legion /bfa\
 - tooltip search (/dout /t \"made by bob\" tiger)\
 - /to [person], will automatically fill the To: field when mailing\
@@ -75,8 +76,9 @@ L["mop"]	= 4 ;
 L["wod"]	= 5 ;
 L["legion"]	= 6 ;
 L["bfa"]	= 7 ;
-L["sl"]		= 8 ; -- neevor 12/15/2022
-L["df"]		= 9 ; -- neevor 12/15/2022
+L["sl"]		= 8 ; -- neevor 12/15/2022 Shadowlands
+L["df"]		= 9 ; -- neevor 12/15/2022 Dragonflight
+L["tww"]        = 10; -- neevor 09/05/2024 The War Within
 
 local debugtext = "|cff7f0000 DEBUG |r"
 
@@ -112,6 +114,8 @@ L["debugatBank"]	= debugtext.."BankFrame is visible, therefore we're at the bank
 L["debugatBankflag"]	= debugtext.."BANKFRAME_OPENED flagged, therefore we're at the bank";
 L["debugatGuildBank"]	= debugtext.."GuildBankFrame is visible, therefore we're at the guild bank";
 L["debugatGuildBankflag"]	= debugtext.."GUILDBANKFRAME_OPENED flagged, therefore we're at the guild bank";
+L["debugatAccountBank"]   = debugtext.."AccountBankPanel is visible, therefore we're at the Warband bank";
+L["debugatGuildBankflag"]       = debugtext.."BANKFRAME_OPENED flagged and AccountBankPanel Visible, therefore we're at the Warband bank";
 L["debugatMerchant"]	= debugtext.."MerchantFrame is visible, therefore we're at a vendor";
 L["debugatMerchantflag"]	= debugtext.."MERCHANT_SHOW flagged, therefore we're at a vendor";
 L["debugatTrade"]	= debugtext.."TradeFrame is visible, therefore we're trading";
