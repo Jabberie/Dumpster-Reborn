@@ -3,12 +3,13 @@ Dumpster = LibStub("AceAddon-3.0"):NewAddon("Dumpster","AceConsole-3.0","AceEven
 local categoryDumpster, layoutDumpster -- neevor: Settings fix 11.x.x
 local categoryHelp, layoutHelp -- neevor: Settings fix 11.x.x
 
-local version = "v11"
+local version = "v12"
 local Dumpster = Dumpster
 --local pt = LibStub("LibPeriodicTable-3.1", true)
 --local gratuity = AceLibrary("Gratuity-2.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("Dumpster",true)
 local debug = false;
+--local debug = true;
 local superdebug = false;
 
 local delayedso="";
@@ -131,7 +132,18 @@ DumpsterGuildFrame:SetScript("OnEvent",function(s,e,a)
 end)
 
 local function IsGuildBankFrameOpen()
-    return GuildBankFrame and GuildBankFrame:IsVisible()
+
+	local IsGuildBankFrameOpen = false 
+
+	if debug then print("IsGuildBankFrameOpen is set to " .. IsGuildBankFrameOpen) end	
+
+	IsGuildBankFrameOpen = ((GuildBankFrame and GuildBankFrame:IsVisible()) or Baganator_SingleViewGuildViewFrame:IsVisible())
+
+-- /run print(Baganator_SingleViewGuildViewFrame:IsVisible())
+
+	if debug then print("IsGuildBankFrameOpen is set to " .. IsGuildBankFrameOpen) end
+
+    return IsGuildBankFrameOpen
 end
 
 
@@ -180,11 +192,12 @@ end
 --  ########################################################
 
 local function IsAccountBankPanelOpen()
-    return BankFrame and AccountBankPanel:IsVisible()
+    return (BankFrame and BankFrame:IsVisible() or Baganator_SingleViewBankViewFrameblizzard and Baganator_SingleViewBankViewFrameblizzard:IsVisible()) and BankFrame:GetActiveBankType() == Enum.BankType.Account
 end
 
 function Dumpster:AtAccountBank()
-	if BankFrame and AccountBankPanel:IsVisible() then
+	if debug then self:Print("Checking AtAccountBank"); end
+	if ((BankFrame and BankFrame:IsVisible() or Baganator_SingleViewBankViewFrameblizzard and Baganator_SingleViewBankViewFrameblizzard:IsVisible()) and BankFrame:GetActiveBankType() == Enum.BankType.Account) then
 		if debug then self:Print(L.debugatAccountBank); end
 		return true
 	end
@@ -212,7 +225,7 @@ function Dumpster:Nowhere()
 end
 
 function Dumpster:BANKFRAME_OPENED()
-	Dumpster:Nowhere(); atBank=true; atAccountBank=true;
+	Dumpster:Nowhere(); atBank=true;
 	if debug then self:Print(L.debugevent("BANKFRAME_OPENED")); end
 end
 
@@ -340,7 +353,7 @@ function Dumpster:AtBank()
 end
 
 function Dumpster:AtGuildBank()
-	if GuildBankFrame and GuildBankFrame:IsVisible() then
+	if ((GuildBankFrame and GuildBankFrame:IsVisible()) or Baganator_SingleViewGuildViewFrame and Baganator_SingleViewGuildViewFrame:IsVisible()) then
 		if debug then self:Print(L.debugatGuildBank); end
 		return true
 	end
@@ -499,6 +512,7 @@ function Dumpster:OkToDump(so)
 	end
 
 	if Dumpster:AtGuildBank() then return true end
+	if Dumpster:AtAccountBank() then return true end
 	if Dumpster:AtBank() then return true end
 	if Dumpster:AtTrade() then return true end
 	if Dumpster:AtMerchant() then return true end

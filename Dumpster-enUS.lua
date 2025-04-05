@@ -82,62 +82,59 @@ L["tww"]        = 10; -- neevor 09/05/2024 The War Within
 
 local debugtext = "|cff7f0000 DEBUG |r"
 
-L["debugDumpIt"]	= function(C,W,X,Y,Z) return debugtext.."Dumping with parameters maxcount=["..C.."], expansion=["..W.."], bind=["..X.."], inorout=["..Y.."], search=["..Z.."]"; end
-
-L["debugSuperEnabled"]	= debugtext.."Super debugging messages enabled -- bring on the spam!";
-L["debugSuperDisabled"]	= debugtext.."Super debugging messages disabled";
-L["debugEnabled"]	= debugtext.."Debugging messages enabled";
-L["debugDisabled"]	= debugtext.."Debugging messages disabled";
-L["debugnumstacks12"]	= debugtext.."Setting numstacks to 12 since we're at the mailbox"
-L["debugnumstacks6"]	= debugtext.."Setting numstacks to 6 since we're at the trade frame"
-L["debugnumstacks"]	= function(X) return debugtext.."Setting numstacks to ["..X.."] as requested"; end
-L["debugDumpBag"]	= function(W,X,Y,Z) return debugtext.."Checking ["..W.."] bag ["..X.."] with ["..Y.."] slots for ["..Z.."]"; end
-L["debugDumpMail"]	= function(X) return debugtext.."Checking mail for ["..X.."]"; end
-L["debugDumpMerchant"]	= function(X) return debugtext.."Buying ["..X.."] from merchant"; end
-L["debugDumpBagCheckItem"]	= function(X,Y,Z) return debugtext.."Checking item ["..X.."] in bag ["..Y.."] slot ["..Z.."]"; end
-L["debugDumpBagDumpItem"]	= function(X,Y) return debugtext.."Dumping item ["..X.."], maxcount= "..Y; end
-L["debugDumpBagMax"]	= function(X) return debugtext.."Not dumping item ["..X.."], because maxcount=0"; end
-L["debugNumBankBags"]	= function(X) return debugtext.."Bank bags found: ["..X.."]"; end
-L["debugSearch"]	= function(X) return debugtext.."Current search terms: ["..X.."]"; end
-
-L["debugParseResults"]	= function(X,Y,Z) return debugtext.."ParseOptions result: ["..X.."]=["..Y.."]"; end
-L["debugTooltip"]	= function(X) return debugtext.."Item tooltip = ["..X.."]"; end
-L["debugExpansion"]	= function(X) return debugtext.."Item Expansion = ["..X.."]"; end
-L["debugTooltipBindFail"]	= function(X,Y) return debugtext.."Failed to find bind status ["..X.."], looked for text ["..Y.."]"; end
-L["debugTooltipExpansionFail"]	= function(X,Y) return debugtext.."Failed to find Expansion ["..X.."], looked for text ["..Y.."]"; end
-L["debugTooltipFail"]	= function(X) return debugtext.."Failed to find text in tooltip, looked for text ["..X.."]"; end
-
-L["debugatMailSend"]	= debugtext.."SendMailFrame is visible, therefore we're at the mail send page";
-L["debugatMailInbox"]	= debugtext.."InboxPrevPageButton is visible, therefore we're at the inbox";
-L["debugatMailboxflag"]	= debugtext.."MAIL_SHOW flagged, therefore we're at the mailbox";
-L["debugatBank"]	= debugtext.."BankFrame is visible, therefore we're at the bank";
-L["debugatBankflag"]	= debugtext.."BANKFRAME_OPENED flagged, therefore we're at the bank";
-L["debugatGuildBank"]	= debugtext.."GuildBankFrame is visible, therefore we're at the guild bank";
-L["debugatGuildBankflag"]	= debugtext.."GUILDBANKFRAME_OPENED flagged, therefore we're at the guild bank";
-L["debugatAccountBank"]   = debugtext.."AccountBankPanel is visible, therefore we're at the Warband bank";
-L["debugatGuildBankflag"]       = debugtext.."BANKFRAME_OPENED flagged and AccountBankPanel Visible, therefore we're at the Warband bank";
-L["debugatMerchant"]	= debugtext.."MerchantFrame is visible, therefore we're at a vendor";
-L["debugatMerchantflag"]	= debugtext.."MERCHANT_SHOW flagged, therefore we're at a vendor";
-L["debugatTrade"]	= debugtext.."TradeFrame is visible, therefore we're trading";
-L["debugatTradeflag"]	= debugtext.."MERCHANT_SHOW flagged, therefore we're at a vendor";
-L["debugatGossip"]	= debugtext.."GossipFrame is visible, therefore we're talking to an NPC";
-L["debugatGossipflag"]	= debugtext.."GOSSIP_SHOW flagged, therefore we're talking to an NPC";
-L["debugevent"]		= function(X) return debugtext..X.." event fired"; end
-L["debugDelayed"]	= function(X,Y) return debugtext.."Delaying dump of ["..X.."], direction: ["..Y.."]"; end
-L["debugGossipOption"]	= function(X) return debugtext.."Found vendor gossip option: ["..X.."]"; end
-L["debugleftovers"]	= function(X) return debugtext.."Saving leftovers: ["..X.."]"; end
-L["debugNoStackFull"]	= debugtext.."No full or partial stack qualifiers, so passing";
-L["debugInvalidStackFull"]	= function(x) return debugtext.."so[stackfull] is invalid: ["..X.."]"; end
-L["debugStackFullcheckmatch"]	= function(X,Y) return debugtext.."Full stack is ["..X.."], we have ["..Y.."]"; end
-L["debugDumpMerchantQuantity"]	= function(X,Y) return debugtext.."Item ["..X.."] has quantity ["..Y.."]"; end
-L["debugDumpMerchantMaxStack"]	= function(X) return debugtext.."Setting buycount to ["..X.."] due to GetMerchantItemMaxStack"; end
-L["debugTooltipFailed"]	= function(X,Y,Z) return debugtext.."Setting tooltip with ["..X.."], bag ["..Y.."] slot ["..Z.."] failed, falling back to generic item tooltip"; end
-L["debugProcessDelayed"]	= function(X,Y) return debugtext.."ProcessDelayed triggered ["..X.."], search = ["..Y.."]"; end
-L["debugGbankDelayed"]	= debugtext.."Processing delayed guild bank request"
-L["debugGbankFirst"]	= debugtext.."Processing first guild bank request"
-L["debugExistingCount"]	= function(X) return debugtext.."Existing count: ["..X.."]"; end
-L["debugnoitem"]	= function(X,Y,Z) return debugtext.."Empty slot in "..X..", bag "..Y..", slot "..Z; end
-L["debugfoundflag"]	= function(X) return debugtext.."Found flag: ["..X.."]"; end
-L["debugflagtoken"]	= function(X) return debugtext.."Current flag token: ["..X.."]"; end
+L["debugDumpIt"]                   = function(C,W,X,Y,Z) return debugtext.."Dumping with parameters maxcount=["..C.."], expansion=["..W.."], bind=["..X.."], inorout=["..Y.."], search=["..Z.."]"; end
+L["debugSuperEnabled"]             = debugtext.."Super debugging messages enabled -- bring on the spam!";
+L["debugSuperDisabled"]            = debugtext.."Super debugging messages disabled";
+L["debugEnabled"]                  = debugtext.."Debugging messages enabled";
+L["debugDisabled"]                 = debugtext.."Debugging messages disabled";
+L["debugnumstacks12"]              = debugtext.."Setting numstacks to 12 since we're at the mailbox"
+L["debugnumstacks6"]               = debugtext.."Setting numstacks to 6 since we're at the trade frame"
+L["debugnumstacks"]                = function(X) return debugtext.."Setting numstacks to ["..X.."] as requested"; end
+L["debugDumpBag"]                  = function(W,X,Y,Z) return debugtext.."Checking ["..W.."] bag ["..X.."] with ["..Y.."] slots for ["..Z.."]"; end
+L["debugDumpMail"]                 = function(X) return debugtext.."Checking mail for ["..X.."]"; end
+L["debugDumpMerchant"]             = function(X) return debugtext.."Buying ["..X.."] from merchant"; end
+L["debugDumpBagCheckItem"]         = function(X,Y,Z) return debugtext.."Checking item ["..X.."] in bag ["..Y.."] slot ["..Z.."]"; end
+L["debugDumpBagDumpItem"]          = function(X,Y) return debugtext.."Dumping item ["..X.."], maxcount= "..Y; end
+L["debugDumpBagMax"]               = function(X) return debugtext.."Not dumping item ["..X.."], because maxcount=0"; end
+L["debugNumBankBags"]              = function(X) return debugtext.."Bank bags found: ["..X.."]"; end
+L["debugSearch"]                   = function(X) return debugtext.."Current search terms: ["..X.."]"; end
+L["debugParseResults"]             = function(X,Y,Z) return debugtext.."ParseOptions result: ["..X.."]=["..Y.."]"; end
+L["debugTooltip"]                  = function(X) return debugtext.."Item tooltip = ["..X.."]"; end
+L["debugExpansion"]                = function(X) return debugtext.."Item Expansion = ["..X.."]"; end
+L["debugTooltipBindFail"]          = function(X,Y) return debugtext.."Failed to find bind status ["..X.."], looked for text ["..Y.."]"; end
+L["debugTooltipExpansionFail"]     = function(X,Y) return debugtext.."Failed to find Expansion ["..X.."], looked for text ["..Y.."]"; end
+L["debugTooltipFail"]              = function(X) return debugtext.."Failed to find text in tooltip, looked for text ["..X.."]"; end
+L["debugatMailSend"]               = debugtext.."SendMailFrame is visible, therefore we're at the mail send page";
+L["debugatMailInbox"]              = debugtext.."InboxPrevPageButton is visible, therefore we're at the inbox";
+L["debugatMailboxflag"]            = debugtext.."MAIL_SHOW flagged, therefore we're at the mailbox";
+L["debugatBank"]                   = debugtext.."BankFrame is visible, therefore we're at the bank";
+L["debugatBankflag"]               = debugtext.."BANKFRAME_OPENED flagged, therefore we're at the bank";
+L["debugatGuildBank"]              = debugtext.."GuildBankFrame is visible, therefore we're at the guild bank";
+L["debugatGuildBankflag"]          = debugtext.."GUILDBANKFRAME_OPENED flagged, therefore we're at the guild bank";
+L["debugatAccountBank"]            = debugtext.."AccountBankPanel is visible, therefore we're at the Warband bank";
+L["debugatGuildBankflag"]          = debugtext.."BANKFRAME_OPENED flagged and AccountBankPanel Visible, therefore we're at the Warband bank";
+L["debugatMerchant"]               = debugtext.."MerchantFrame is visible, therefore we're at a vendor";
+L["debugatMerchantflag"]           = debugtext.."MERCHANT_SHOW flagged, therefore we're at a vendor";
+L["debugatTrade"]                  = debugtext.."TradeFrame is visible, therefore we're trading";
+L["debugatTradeflag"]              = debugtext.."MERCHANT_SHOW flagged, therefore we're at a vendor";
+L["debugatGossip"]                 = debugtext.."GossipFrame is visible, therefore we're talking to an NPC";
+L["debugatGossipflag"]             = debugtext.."GOSSIP_SHOW flagged, therefore we're talking to an NPC";
+L["debugevent"]                    = function(X) return debugtext..X.." event fired"; end
+L["debugDelayed"]                  = function(X,Y) return debugtext.."Delaying dump of ["..X.."], direction: ["..Y.."]"; end
+L["debugGossipOption"]             = function(X) return debugtext.."Found vendor gossip option: ["..X.."]"; end
+L["debugleftovers"]                = function(X) return debugtext.."Saving leftovers: ["..X.."]"; end
+L["debugNoStackFull"]              = debugtext.."No full or partial stack qualifiers, so passing";
+L["debugInvalidStackFull"]         = function(x) return debugtext.."so[stackfull] is invalid: ["..X.."]"; end
+L["debugStackFullcheckmatch"]      = function(X,Y) return debugtext.."Full stack is ["..X.."], we have ["..Y.."]"; end
+L["debugDumpMerchantQuantity"]     = function(X,Y) return debugtext.."Item ["..X.."] has quantity ["..Y.."]"; end
+L["debugDumpMerchantMaxStack"]     = function(X) return debugtext.."Setting buycount to ["..X.."] due to GetMerchantItemMaxStack"; end
+L["debugTooltipFailed"]            = function(X,Y,Z) return debugtext.."Setting tooltip with ["..X.."], bag ["..Y.."] slot ["..Z.."] failed, falling back to generic item tooltip"; end
+L["debugProcessDelayed"]           = function(X,Y) return debugtext.."ProcessDelayed triggered ["..X.."], search = ["..Y.."]"; end
+L["debugGbankDelayed"]             = debugtext.."Processing delayed guild bank request"
+L["debugGbankFirst"]               = debugtext.."Processing first guild bank request"
+L["debugExistingCount"]            = function(X) return debugtext.."Existing count: ["..X.."]"; end
+L["debugnoitem"]                   = function(X,Y,Z) return debugtext.."Empty slot in "..X..", bag "..Y..", slot "..Z; end
+L["debugfoundflag"]                = function(X) return debugtext.."Found flag: ["..X.."]"; end
+L["debugflagtoken"]                = function(X) return debugtext.."Current flag token: ["..X.."]"; end
 
 end
