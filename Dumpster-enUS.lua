@@ -53,32 +53,35 @@ L["dumpsetempty"]	= function(X) return "Empty set given for ["..X.."]"; end
 L["dumpsetadded"]	= function(X,Y) return "Added set named ["..X.."] containing ["..Y.."]"; end
 L["dumpsetuse"]	= function(X,Y) return "Using set named ["..X.."] containing ["..Y.."]"; end
 
--- thanks neevor
--- fix for account bound items  
+
 --L["bindBOA"]    = "Binds to account";        -- matches in-game text
 --L["bindBOA"]    = "Battle.net Account Bound";        -- matches in-game text
 --L["bindBOA"]    = "Blizzard Account Bound";        -- matches in-game text 
-L["bindBOA"]    = "account";        -- matches in-game text, neevor 12/15/2022, very hacky 
-L["bindBOE"]	= ITEM_BIND_ON_EQUIP ;		-- matches in-game text
-L["bindBOU"]	= ITEM_BIND_ON_USE ;		-- matches in-game text
-L["bindBOP"]	= ITEM_BIND_ON_PICKUP ;		-- matches in-game text
-L["bindAll"]	= "All bindings";		-- doesn't match anything in-game
-L["bindBound"]	= ITEM_SOULBOUND ;		-- matches in-game text
-L["notbound"]	= "not Soulbound";		-- doesn't match anything in-game
+L["warbound"]    = ITEM_ACCOUNTBOUND;            -- matches in-game text
+L["bindBOA"]    = ITEM_ACCOUNTBOUND;            -- matches in-game text
+L["bindBOE"]    = ITEM_BIND_ON_EQUIP ;          -- matches in-game text
+L["bindBOU"]    = ITEM_BIND_ON_USE ;            -- matches in-game text
+--L["bindBOP"]  = ITEM_BIND_ON_PICKUP ;         -- matches in-game text
+L["bindBOP"]    = ITEM_SOULBOUND;               -- matches in-game text
+L["bindAll"]    = "All bindings";               -- doesn't match anything in-game
+L["bindBound"]  = ITEM_SOULBOUND ;              -- matches in-game text
+L["notbound"]   = "not Soulbound";              -- doesn't match anything in-game
 
 
-L["AllExp"]    	= "All Expansions";
-L["classic"]	= 0 ;
-L["tbc"]	= 1 ;
-L["wotlk"]	= 2 ;
-L["cata"]	= 3 ;
-L["mop"]	= 4 ;
-L["wod"]	= 5 ;
-L["legion"]	= 6 ;
-L["bfa"]	= 7 ;
-L["sl"]		= 8 ; -- neevor 12/15/2022 Shadowlands
-L["df"]		= 9 ; -- neevor 12/15/2022 Dragonflight
-L["tww"]        = 10; -- neevor 09/05/2024 The War Within
+L["AllExp"]       = "All Expansions";
+L["classic"]      = "Classic";
+L["tbc"]          = "The Burning Crusade";
+L["wotlk"]        = "Wrath of the Lich King";
+L["cata"]         = "Cataclysm";
+L["mop"]          = "Mists of Pandaria";
+L["wod"]          = "Warlords of Draenor";
+L["legion"]       = "Legion";
+L["bfa"]          = "Battle for Azeroth";
+L["sl"]           = "Shadowlands";
+L["df"]           = "Dragonflight";
+L["tww"]          = "The War Within";
+L["midnight"]     = "Midnight";
+L["thelasttitan"] = "The Last Titan";
 
 local debugtext = "|cff7f0000 DEBUG |r"
 

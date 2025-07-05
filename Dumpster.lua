@@ -37,6 +37,89 @@ local clickFunctions = {
 	function() GuildBankTab7Button:Click() end
 }
 
+Dumpster.multiFlags = {
+    bind = {
+        account   = "bindBOA",
+        use       = "bindBOU",
+        equip     = "bindBOE",
+        pickup    = "bindBOP",
+        boa       = "bindBOA",
+        bou       = "bindBOU",
+        boe       = "bindBOE",
+        bop       = "bindBOP",
+        soulbound = "soulbound",
+        sb        = "soulbound",
+        nb        = "notbound",
+        notbound  = "notbound",
+        warbound  = "Warbound",
+        wb        = "Warbound",
+        btw       = "Warbound"
+    },
+
+	quality = {
+		poor      = Enum.ItemQuality.Poor,       -- 0
+		common    = Enum.ItemQuality.Common,     -- 1
+		uncommon  = Enum.ItemQuality.Uncommon,   -- 2
+		rare      = Enum.ItemQuality.Rare,       -- 3
+		epic      = Enum.ItemQuality.Epic,       -- 4
+		legendary = Enum.ItemQuality.Legendary,  -- 5
+		artifact  = Enum.ItemQuality.Artifact,   -- 6
+		heirloom  = Enum.ItemQuality.Heirloom,   -- 7
+
+		grey      = Enum.ItemQuality.Poor,       -- alias for poor
+		gray      = Enum.ItemQuality.Poor,       -- alias for poor
+		white     = Enum.ItemQuality.Common,     -- alias for common
+		green     = Enum.ItemQuality.Uncommon,   -- alias for uncommon
+		blue      = Enum.ItemQuality.Rare,       -- alias for rare
+		purple    = Enum.ItemQuality.Epic,       -- alias for epic
+		orange    = Enum.ItemQuality.Legendary,  -- alias for legendary
+		red       = Enum.ItemQuality.Artifact,   -- alias for artifact
+		aqua      = Enum.ItemQuality.Heirloom,   -- alias for heirloom
+	},
+
+    stackfull = {
+        full    = "full",
+        partial = "partial"
+    },
+
+	expansion = {
+	    classic      = LE_EXPANSION_CLASSIC,                -- 0
+	    vanilla      = LE_EXPANSION_CLASSIC,
+
+	    tbc          = LE_EXPANSION_BURNING_CRUSADE,        -- 1
+	    bc           = LE_EXPANSION_BURNING_CRUSADE,
+
+	    wotlk        = LE_EXPANSION_WRATH_OF_THE_LICH_KING, -- 2
+	    wrath        = LE_EXPANSION_WRATH_OF_THE_LICH_KING,
+
+	    cataclysm    = LE_EXPANSION_CATACLYSM,
+	    cata         = LE_EXPANSION_CATACLYSM,              -- 3
+
+	    mop          = LE_EXPANSION_MISTS_OF_PANDARIA,      -- 4
+	    pandaria     = LE_EXPANSION_MISTS_OF_PANDARIA,
+
+	    wod          = LE_EXPANSION_WARLORDS_OF_DRAENOR,    -- 5
+	    draenor      = LE_EXPANSION_WARLORDS_OF_DRAENOR,
+
+	    legion       = LE_EXPANSION_LEGION,                 -- 6
+
+	    bfa          = LE_EXPANSION_BATTLE_FOR_AZEROTH,     -- 7
+	    battle       = LE_EXPANSION_BATTLE_FOR_AZEROTH,
+
+	    shadowlands  = LE_EXPANSION_SHADOWLANDS,            -- 8
+	    sl           = LE_EXPANSION_SHADOWLANDS,
+
+	    df           = LE_EXPANSION_DRAGONFLIGHT,           -- 9
+	    dragonflight = LE_EXPANSION_DRAGONFLIGHT,
+
+	    tww          = LE_EXPANSION_THE_WAR_WITHIN,         -- 10
+	    warwithin    = LE_EXPANSION_THE_WAR_WITHIN,
+
+	    midnight     = 11,  -- Placeholder until LE_EXPANSION_MIDNIGHT is added
+	    thelasttitan = 12,  -- Placeholder until LE_EXPANSION_THE_LAST_TITAN is added
+	}
+}
+
 SetGuildBankTab = function(tab)
 	local func = clickFunctions[tab]
 	if func then
@@ -132,21 +215,13 @@ DumpsterGuildFrame:SetScript("OnEvent",function(s,e,a)
 end)
 
 local function IsGuildBankFrameOpen()
+    local isOpen = (GuildBankFrame and GuildBankFrame:IsVisible()) or
+                   (Baganator_SingleViewGuildViewFrame and Baganator_SingleViewGuildViewFrame:IsVisible())
 
-	local IsGuildBankFrameOpen = false 
+    if debug then print("IsGuildBankFrameOpen is set to " .. tostring(isOpen)) end
 
-	if debug then print("IsGuildBankFrameOpen is set to " .. IsGuildBankFrameOpen) end	
-
-	IsGuildBankFrameOpen = ((GuildBankFrame and GuildBankFrame:IsVisible()) or Baganator_SingleViewGuildViewFrame:IsVisible())
-
--- /run print(Baganator_SingleViewGuildViewFrame:IsVisible())
-
-	if debug then print("IsGuildBankFrameOpen is set to " .. IsGuildBankFrameOpen) end
-
-    return IsGuildBankFrameOpen
+    return isOpen
 end
-
-
 
 -- Guild throttling workaround
 DumpsterQueue = {}
@@ -578,7 +653,7 @@ end
 
 function Dumpster:ParseOptions(so)
  --	To print out quality colors:
- --	/script for x=0,6 do local r,g,b,h = GetItemQualityColor(x); w=string.sub(h,3,10); self:Print(h..x.." = "..w) end
+ --	/script for i = 0, 6 do local r, g, b, hex = GetItemQualityColor(i); print(i, hex, _G["ITEM_QUALITY"..i.."_DESC"] or "") end
 
 	local setloop=true
 	while setloop do
@@ -606,18 +681,102 @@ function Dumpster:ParseOptions(so)
 		so.limitcount=12
 	end
 
-	local boolFlags = { only="only", test="test", remain="remain", except="except" }
-	local parameterFlags = { tooltipsearch="tooltipsearch", tooltip="tooltipsearch", to="to", t="tooltipsearch" }
+	local boolFlags = { 
+		only="only", 
+		test="test", 
+		remain="remain", 
+		except="except" 
+	}
+
+	local parameterFlags = { 
+		tooltipsearch="tooltipsearch", 
+		tooltip="tooltipsearch", 
+		to="to", 
+		t="tooltipsearch" 
+	}
+
 	local multiFlags = {
-		bind = { account="bindBOA", use="bindBOU", equip="bindBOE", pickup="bindBOP", 
-		boa="bindBOA", bou="bindBOU", boe="bindBOE", bop="bindBOP",
-		soulbound="soulbound", sb="soulbound", nb="notbound", notbound="notbound",
-		warbound="Warbound", wb="Warbound", btw="Warbound"}, -- neevor: Warbound flags
-		quality = { poor=0, common=1, uncommon=2, rare=3, epic=4, legendary=5, artifact=6, 
-		grey=0, gray=0, white=1, green=2, blue=3, purple=4, orange=5, red=6 },
-		stackfull = { full="full", partial="partial" },
-		expansion = { classic=0, tbc=1, wotlk=2, cata=3, mop=4, wod=5, legion=6, bfa=7 }
+	    bind = {
+	        account   = "bindBOA",
+	        use       = "bindBOU",
+	        equip     = "bindBOE",
+	        pickup    = "bindBOP",
+	        boa       = "bindBOA",
+	        bou       = "bindBOU",
+	        boe       = "bindBOE",
+	        bop       = "bindBOP",
+	        soulbound = "soulbound",
+	        sb        = "soulbound",
+	        nb        = "notbound",
+	        notbound  = "notbound",
+	        warbound  = "Warbound",
+	        wb        = "Warbound",
+	        btw       = "Warbound"
+	    },
+
+		quality = {
+			poor      = Enum.ItemQuality.Poor,       -- 0
+			common    = Enum.ItemQuality.Common,     -- 1
+			uncommon  = Enum.ItemQuality.Uncommon,   -- 2
+			rare      = Enum.ItemQuality.Rare,       -- 3
+			epic      = Enum.ItemQuality.Epic,       -- 4
+			legendary = Enum.ItemQuality.Legendary,  -- 5
+			artifact  = Enum.ItemQuality.Artifact,   -- 6
+			heirloom  = Enum.ItemQuality.Heirloom,   -- 7
+
+			grey      = Enum.ItemQuality.Poor,       -- alias for poor
+			gray      = Enum.ItemQuality.Poor,       -- alias for poor
+			white     = Enum.ItemQuality.Common,     -- alias for common
+			green     = Enum.ItemQuality.Uncommon,   -- alias for uncommon
+			blue      = Enum.ItemQuality.Rare,       -- alias for rare
+			purple    = Enum.ItemQuality.Epic,       -- alias for epic
+			orange    = Enum.ItemQuality.Legendary,  -- alias for legendary
+			red       = Enum.ItemQuality.Artifact,   -- alias for artifact
+			aqua      = Enum.ItemQuality.Heirloom,   -- alias for heirloom
+		},
+
+	    stackfull = {
+	        full    = "full",
+	        partial = "partial"
+	    },
+
+		expansion = {
+		    classic      = LE_EXPANSION_CLASSIC,                -- 0
+		    vanilla      = LE_EXPANSION_CLASSIC,
+
+		    tbc          = LE_EXPANSION_BURNING_CRUSADE,        -- 1
+		    bc           = LE_EXPANSION_BURNING_CRUSADE,
+
+		    wotlk        = LE_EXPANSION_WRATH_OF_THE_LICH_KING, -- 2
+		    wrath        = LE_EXPANSION_WRATH_OF_THE_LICH_KING,
+
+		    cataclysm    = LE_EXPANSION_CATACLYSM,
+		    cata         = LE_EXPANSION_CATACLYSM,              -- 3
+
+		    mop          = LE_EXPANSION_MISTS_OF_PANDARIA,      -- 4
+		    pandaria     = LE_EXPANSION_MISTS_OF_PANDARIA,
+
+		    wod          = LE_EXPANSION_WARLORDS_OF_DRAENOR,    -- 5
+		    draenor      = LE_EXPANSION_WARLORDS_OF_DRAENOR,
+
+		    legion       = LE_EXPANSION_LEGION,                 -- 6
+
+		    bfa          = LE_EXPANSION_BATTLE_FOR_AZEROTH,     -- 7
+		    battle       = LE_EXPANSION_BATTLE_FOR_AZEROTH,
+
+		    shadowlands  = LE_EXPANSION_SHADOWLANDS,            -- 8
+		    sl           = LE_EXPANSION_SHADOWLANDS,
+
+		    df           = LE_EXPANSION_DRAGONFLIGHT,           -- 9
+		    dragonflight = LE_EXPANSION_DRAGONFLIGHT,
+
+		    tww          = LE_EXPANSION_THE_WAR_WITHIN,         -- 10
+		    warwithin    = LE_EXPANSION_THE_WAR_WITHIN,
+
+		    midnight     = 11,  -- Placeholder until LE_EXPANSION_MIDNIGHT is added
+		    thelasttitan = 12,  -- Placeholder until LE_EXPANSION_THE_LAST_TITAN is added
 		}
+	}
 
 	if debug then self:Print(L.debugSearch(so.search)); end
 	so.search = so.search:lower():gsub("  "," ")
@@ -644,18 +803,28 @@ function Dumpster:ParseOptions(so)
 		end
 	end
 
-	-- parse multivalue flags
-	for flag, flagvalues in pairs(multiFlags) do
-		for flagsearch, flagtoken in pairs(flagvalues) do
-			if so.search:find("/"..flagsearch) then
-				if debug then self:Print(L.debugfoundflag(flag.."="..flagtoken)); end
-				so[flag]=flagtoken
 
-				-- strip out /flag
-				so.search = so.search:gsub("/"..flagsearch,""):gsub("  "," ")
-				if debug then self:Print(L.debugSearch(so.search)); end
-			end
-		end
+	-- parse multivalue flags
+	for flag, flagvalues in pairs(self.multiFlags) do
+	    for flagsearch, flagtoken in pairs(flagvalues) do
+	        local pattern = "/" .. flagsearch:gsub("([^%w])", "%%%1") .. "%f[%A]"
+	        if so.search:find(pattern) then
+	            local tokenToPrint = flagtoken
+	            if flag == "expansion" and type(flagtoken) == "number" then
+	                tokenToPrint = self:ExpansionIdToKey(flagtoken)
+	            end
+
+	            if debug then
+	                self:Print(L.debugfoundflag(flag .. "=" .. tostring(tokenToPrint)))
+	            end
+	            so[flag] = flagtoken
+
+	            so.search = so.search:gsub(pattern, ""):gsub("  ", " ")
+	            if debug then
+	                self:Print(L.debugSearch(so.search))
+	            end
+	        end
+	    end
 	end
 
 	-- parse flags that take a parameter
@@ -708,7 +877,8 @@ function Dumpster:ParseOptions(so)
 	local qualitynumber=tonumber(so.quality)
 	if qualitynumber and qualitynumber<7 and qualitynumber>-1 then
 		local r,g,b,hex=GetItemQualityColor(qualitynumber)
-		so.search = hex..".+"..so.search
+		-- so.search = hex..".+"..so.search
+		so.qualitynumber = qualitynumber
 	end
 
 	if superdebug then 
@@ -824,24 +994,34 @@ function Dumpster:CheckBindandTooltip(item,so)
 	end
 
 
-	if so.expansion~="AllExp" then
-		
-		expID=Dumpster:GetExpacID(item)
+	if so.expansion ~= "AllExp" then
+		expID = self:GetExpacID(item)
 
-		if debug then self:Print(L.debugExpansion(expID)); end
+		if debug then
+			local expKey = self:ExpansionIdToKey(expID)
+			self:Print(L.debugExpansion(expID) .. " (" .. expKey .. ")")
+		end
 
-		if  expID ~= so.expansion then
+		if expID ~= so.expansion then
 			if not so.except then
-				if debug then self:Print(L.debugTooltipExpansionFail(so.expansion,L[so.expansion])); end
+				if debug then
+					local searchKey = self:ExpansionIdToKey(so.expansion)
+					self:Print(L.debugTooltipExpansionFail(so.expansion, L[searchKey] or "unknown"))
+				end
 				return false
 			end
 		else
 			if so.except then
-				if debug then self:Print(L.debugTooltipExpansionFail(so.expansion,L[so.expansion])); end
+				if debug then
+					local searchKey = self:ExpansionIdToKey(so.expansion)
+					self:Print(L.debugTooltipExpansionFail(so.expansion, L[searchKey] or "unknown"))
+				end
 				return false
 			end
 		end
 	end
+
+
 
 	if so.tooltipsearch and so.tooltipsearch~="" then
 		if tooltip=="" then
@@ -1175,7 +1355,8 @@ function Dumpster:NewDumpBag(so)
 		local item = Dumpster:getItemLink(so)
 		if item then
 			if superdebug then self:Print(L.debugDumpBagCheckItem(item,so.bag,so.slot)); end
-			if Dumpster:CheckSearchText(item,so) and Dumpster:CheckBindandTooltip(item,so) then
+			--if Dumpster:CheckSearchText(item,so) and Dumpster:CheckBindandTooltip(item,so) then
+			if Dumpster:CheckSearchText(item, so) and Dumpster:CheckBindandTooltip(item, so) and Dumpster:CheckItemQuality(item, so) then
 				local numinstack = Dumpster:getNumInStack(so)
 				if Dumpster:checkStackFull(so,item,numinstack) then
 					if so.maxcount>0 then
@@ -1529,7 +1710,7 @@ function Dumpster:showPanel()
 	frame:SetScript("OnShow", nil)
 end
 
-function Dumpster:SetUpInterfaceOptions()
+function Dumpster:SetUpInterfaceOptions2()
     -- Create the main panel for the addon
     Dumpster.panel = CreateFrame("FRAME", "DumpsterPanel", UIParent, "BackdropTemplate")
     Dumpster.panel.name = "Dumpster "..version
@@ -1566,6 +1747,50 @@ function Dumpster:SetUpInterfaceOptions()
         end)
         InterfaceOptions_AddCategory(Dumpster.helppanel)
     end
+end
+
+function Dumpster:SetUpInterfaceOptions()
+    -- Create the main panel for the addon
+    Dumpster.panel = CreateFrame("FRAME", "DumpsterPanel", UIParent, "BackdropTemplate")
+    Dumpster.panel.name = "Dumpster "..version
+    Dumpster.panel:SetScript("OnShow", function(self)
+        Dumpster.showPanel()
+    end)
+    
+
+    -- Register the main category
+    local categoryDumpster, layoutDumpster = Settings.RegisterCanvasLayoutCategory(Dumpster.panel, Dumpster.panel.name)
+    categoryDumpster.ID = Dumpster.panel.name
+    Settings.RegisterAddOnCategory(categoryDumpster)
+
+    -- Create the help panel as a subcategory
+    Dumpster.helppanel = CreateFrame("FRAME", "DumpsterHelpPanel", UIParent, "BackdropTemplate")
+    Dumpster.helppanel.name = "Usage"
+    Dumpster.helppanel.parent = Dumpster.panel.name
+    Dumpster.helppanel:SetScript("OnShow", function(self)
+        Dumpster.showHelpPanel()
+    end)
+
+    -- Register the help panel as a subcategory
+    local categoryHelp = Settings.RegisterCanvasLayoutSubcategory(categoryDumpster, Dumpster.helppanel, Dumpster.helppanel.name)
+    categoryHelp.ID = Dumpster.helppanel.name
+    Settings.RegisterAddOnCategory(categoryHelp)
+end
+
+
+function Dumpster:CheckItemQuality(item, so)
+    if not so.qualitynumber then return true end
+    local itemQuality = select(3, GetItemInfo(item))
+    return itemQuality == so.qualitynumber
+end
+
+function Dumpster:ExpansionIdToKey(id)
+    local expansions = self.multiFlags.expansion
+    if not expansions then return tostring(id) end
+    for k, v in pairs(expansions) do
+        if v == id then return k end
+    end
+    return tostring(id)
 end
 
 

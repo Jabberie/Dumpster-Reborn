@@ -124,3 +124,15 @@
 20221215
 * updated reagent bag
 * udpated guildbank event
+
+20231208
+* Updating Addon to work in all variants of WoW.
+* Retail: Guild bank Queue will cancel if Guild Bank closes.
+
+20240907
+* Fixed interface errors
+* Warbank bank extraction
+
+20250705 - 12.2
+* Fixed multiflag
+* Added new expansions
