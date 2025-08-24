@@ -3,7 +3,7 @@ Dumpster = LibStub("AceAddon-3.0"):NewAddon("Dumpster","AceConsole-3.0","AceEven
 local categoryDumpster, layoutDumpster -- neevor: Settings fix 11.x.x
 local categoryHelp, layoutHelp -- neevor: Settings fix 11.x.x
 
-local version = "v12"
+local version = "v13"
 local Dumpster = Dumpster
 --local pt = LibStub("LibPeriodicTable-3.1", true)
 --local gratuity = AceLibrary("Gratuity-2.0")
@@ -1091,11 +1091,34 @@ function Dumpster:GetExistingCount(originalso)
 	return dumpcount
 end
 
+
 function Dumpster:getMaxBags(so)
 	if so.where=="bank" then
-		return GetNumBankSlots()
+        -- Count existing bank "bags" by probing IDs; include main bank container (-1) as 1.
+        local count = 1
+        local startIndex = Dumpster.WOWRetail and 6 or 5
+        local lastPossible = Dumpster.WOWRetail and 12 or 12
+        for x = startIndex, lastPossible do
+            local slots = C_Container.GetContainerNumSlots(x)
+            if slots and slots > 0 then
+                count = count + 1
+            end
+        end
+        return count
 	elseif so.where=="gbank" and so.inout =="in" then
-		return GetNumBankSlots()
+        -- "in" uses player bags, not bank bag count; return number of player bags that exist.
+        local count = 0
+        for x = 0, NUM_BAG_SLOTS do
+            local slots = C_Container.GetContainerNumSlots(x)
+            if slots and slots > 0 then
+                count = count + 1
+            end
+        end
+        if Dumpster.WOWRetail then
+            local slots = C_Container.GetContainerNumSlots(5) -- reagent bag on retail
+            if slots and slots > 0 then count = count + 1 end
+        end
+        return count
 	elseif so.where=="gbank" and so.inout =="out" then
 		return GetNumGuildBankTabs()
 	elseif so.where=="mail" then
@@ -1109,7 +1132,11 @@ end
 
 function Dumpster:getMaxSlots(so)
 	if so.where=="bank" then
-		return  C_Container.GetContainerNumSlots(so.bag) -- neevor 12/15/2022
+		if so.bag ~= nil then
+			return  C_Container.GetContainerNumSlots(so.bag) -- neevor 12/15/2022
+		else
+			return 0
+		end
 	elseif so.where=="gbank" and so.inout =="in" then
 		return  C_Container.GetContainerNumSlots(so.bag) -- neevor 12/15/2022
 	elseif so.where=="gbank" and so.inout =="out" then
@@ -1207,7 +1234,6 @@ function Dumpster:DumpOutCurrentGbankTab(so)
 	so.bag=GetCurrentGuildBankTab()
 	return Dumpster:NewDumpBag(so)
 end
-
 function Dumpster:DumpOutAllBankBags(so)
     so.where = "bank"
 
@@ -1215,25 +1241,14 @@ function Dumpster:DumpOutAllBankBags(so)
     so.bag = BANK_CONTAINER; -- BANK_CONTAINER = -1
     local dumpcount = Dumpster:NewDumpBag(so);
 
-    -- Dump purchaseable bags
-    local numBankBags = GetNumBankSlots()
-    if debug then self:Print(L.debugNumBankBags(numBankBags)); end
-
-    local startIndex = Dumpster.WOWRetail and 6 or 5  -- Choose the start index based on environment
-
-    for x = startIndex, (startIndex + numBankBags - 1) do
-        so.bag = x
-        dumpcount = dumpcount + Dumpster:NewDumpBag(so)
-    end
-
-    -- Use reagent bank section only if it's retail
-    if Dumpster.WOWRetail then
-        reagentBank = IsReagentBankUnlocked()
-        if reagentBank then
-            BankFrameTab2:Click()
-            so.bag = -3
+    -- Dump purchasable bank bags by probing likely IDs (retail: 6..12).
+    local startIndex = Dumpster.WOWRetail and 6 or 5
+    local lastPossible = Dumpster.WOWRetail and 12 or 12
+    for x = startIndex, lastPossible do
+        local slots = C_Container.GetContainerNumSlots(x)
+        if slots and slots > 0 then
+            so.bag = x
             dumpcount = dumpcount + Dumpster:NewDumpBag(so)
-            BankFrameTab1:Click()
         end
     end
 
