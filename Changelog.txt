@@ -136,3 +136,6 @@
 20250705 - 12.2
 * Fixed multiflag
 * Added new expansions
+
+20250705 - 12.3
+added bagnon references for guild bank

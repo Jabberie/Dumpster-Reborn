@@ -196,7 +196,7 @@ DumpsterGuildFrame:SetPoint("CENTER",0,0)
 DumpsterGuildFrame:RegisterEvent("GUILDBANKFRAME_OPENED")
 DumpsterGuildFrame:RegisterEvent("GUILDBANKFRAME_CLOSED")
 DumpsterGuildFrame:RegisterEvent("PLAYER_INTERACTION_MANAGER_FRAME_SHOW")
-DumpsterGuildFrame:RegisterEvent("GUILDBANKFRAME_CLOSED")
+DumpsterGuildFrame:RegisterEvent("PLAYER_INTERACTION_MANAGER_FRAME_HIDE")
 DumpsterGuildFrame:RegisterEvent("ADDON_LOADED")
 DumpsterGuildFrame:Hide()
 
@@ -207,7 +207,10 @@ DumpsterGuildFrame:SetScript("OnEvent",function(s,e,a)
 	elseif e == "GUILDBANKFRAME_OPENED" then
 		DumpsterGuildFrame:Show()
 	elseif e == "PLAYER_INTERACTION_MANAGER_FRAME_SHOW" then
-		DumpsterGuildFrame:Show()		
+		DumpsterGuildFrame:Show()
+	elseif e == "PLAYER_INTERACTION_MANAGER_FRAME_HIDE" then
+		DumpsterGuildFrame:SetScript("OnUpdate",nil)
+		DumpsterGuildFrame:Hide()	
 	elseif e == "GUILDBANKFRAME_CLOSED" then
 		DumpsterGuildFrame:SetScript("OnUpdate",nil)
 		DumpsterGuildFrame:Hide()
@@ -216,7 +219,8 @@ end)
 
 local function IsGuildBankFrameOpen()
     local isOpen = (GuildBankFrame and GuildBankFrame:IsVisible()) or
-                   (Baganator_SingleViewGuildViewFrame and Baganator_SingleViewGuildViewFrame:IsVisible())
+                   (Baganator_SingleViewGuildViewFrame and Baganator_SingleViewGuildViewFrame:IsVisible()) or
+                   (BagnonGuild1 and BagnonGuild1:IsVisible())
 
     if debug then print("IsGuildBankFrameOpen is set to " .. tostring(isOpen)) end
 
@@ -428,7 +432,7 @@ function Dumpster:AtBank()
 end
 
 function Dumpster:AtGuildBank()
-	if ((GuildBankFrame and GuildBankFrame:IsVisible()) or Baganator_SingleViewGuildViewFrame and Baganator_SingleViewGuildViewFrame:IsVisible()) then
+	if ((GuildBankFrame and GuildBankFrame:IsVisible()) or (Baganator_SingleViewGuildViewFrame and Baganator_SingleViewGuildViewFrame:IsVisible()) or (BagnonGuild1 and BagnonGuild1:IsVisible())) then
 		if debug then self:Print(L.debugatGuildBank); end
 		return true
 	end
