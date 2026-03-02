@@ -133,9 +133,12 @@
 * Fixed interface errors
 * Warbank bank extraction
 
-20250705 - 12.2
+20250705 - 11.2
 * Fixed multiflag
 * Added new expansions
 
-20250705 - 12.3
+20250705 - 11.3
 added bagnon references for guild bank
+
+20260302 - 12.0
+updated toc
