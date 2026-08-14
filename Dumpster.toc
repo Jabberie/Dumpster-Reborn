@@ -1,39 +1,37 @@
-## Interface: 120001
+## Interface: 120100, 50504, 11509
 
 ## Title: Dumpster
-## Title-enUS: Dumpster
-## Notes: Dump things in/out of your bank/guild bank
-## Notes-enUS: Dump things in/out of your bank/guild bank
+## Notes: Dump things in/out of your bank, guild bank, mail, trade, and vendors.
 
 ## Author: Badhairday-Malygos
 ## Project Manager: Jabberie-Draka
+
 ## X-Feedback: jabberie AT gmail DOT com
 ## X-Website: https://www.curseforge.com/wow/addons/dumpster-reborn
 ## X-Category: Inventory
 
-## Version: 1201
-## X-Revision: 1201
-## X-Date: 2026-03-20
+## Version: @project-version@
+## X-Revision: @project-version@
+## X-Date: 2026-08-14
 
 ## X-Localizations: enUS
 ## X-CompatibleLocales: enUS
 
-## RequiredDeps:
 ## OptionalDeps: Ace3
 ## X-Embeds: Ace3
 
 ## SavedVariables: dumpset
-## SavedVariablesPerCharacter:
-
-## LoadOnDemand: 0
-## LoadManagers: AddonLoader
-## X-LoadOn-Always: delayed
-## DefaultState: enabled
 
 hidden-tooltip-for-scanning.xml
-
 embeds.xml
 
 Dumpster-enUS.lua
+Core.lua
+Compatibility.lua
+GuildBank.lua
 Dumpster.lua
-
+Commands.lua
+Parser.lua
+Items.lua
+Transfers.lua
+UI.lua

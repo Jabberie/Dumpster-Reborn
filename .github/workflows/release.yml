@@ -1,0 +1,82 @@
+name: Build GitHub Release
+
+on:
+  workflow_dispatch:
+
+  push:
+    tags:
+      - '*_release'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      # -------------------------------------------------------
+      # Checkout repository
+      # -------------------------------------------------------
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # -------------------------------------------------------
+      # Determine release version
+      #
+      # Example:
+      #   12.001_release -> 12.001
+      # -------------------------------------------------------
+      - name: Determine version
+        id: version
+        shell: bash
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          VERSION="${TAG%_release}"
+
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+          echo "Release tag: $TAG"
+          echo "Addon version: $VERSION"
+
+      # -------------------------------------------------------
+      # Build addon package
+      # -------------------------------------------------------
+      - name: Build package
+        shell: bash
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          PACKAGE_DIR="package/Dumpster"
+
+          mkdir -p "$PACKAGE_DIR"
+
+          rsync -av ./ "$PACKAGE_DIR/" \
+            --exclude ".git" \
+            --exclude ".github" \
+            --exclude "package" \
+            --exclude "README.md" \
+            --exclude "LICENSE" \
+            --exclude ".gitignore" \
+            --exclude ".pkgmeta"
+
+          # Replace CurseForge-style version tokens
+          find "$PACKAGE_DIR" -type f \( -name "*.toc" -o -name "*.lua" \) \
+            -exec sed -i "s/@project-version@/$VERSION/g" {} +
+
+          cd package
+          zip -r "../Dumpster-${VERSION}.zip" Dumpster
+
+      # -------------------------------------------------------
+      # Create GitHub release
+      # -------------------------------------------------------
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Dumpster ${{ steps.version.outputs.version }}
+          tag_name: ${{ steps.version.outputs.tag }}
+          files: |
+            Dumpster-${{ steps.version.outputs.version }}.zip
+          generate_release_notes: true

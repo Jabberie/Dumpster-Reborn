@@ -1,3 +1,12 @@
+Unreleased
+---------
+- Refactored the monolithic addon into Core, Compatibility, Commands, Parser, Items, Transfers, GuildBank, and UI modules.
+- Centralized shared debug/delayed state and inventory compatibility handling.
+- Fixed saved-set listing/counting for keyed saved variables.
+- Replaced hard-coded guild-bank/mail attachment slot counts with Blizzard constants when available.
+- Registered MAIL_SHOW through AceEvent and localized several leaked UI/global variables.
+- Preserved existing slash-command syntax and saved-set format.
+
 20081107 - 1.0
 * Initial release
 
