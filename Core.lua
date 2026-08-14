@@ -21,7 +21,6 @@ local function GetAddonVersion()
         version = GetAddOnMetadata(ADDON_NAME, "Version")
     end
 
-    -- Unpackaged development copies still contain the CurseForge token.
     if not version or version == "" or version == "@project-version@" then
         return "Dev"
     end
@@ -191,6 +190,14 @@ function Dumpster:OnEnable()
 
     self:RegisterEvent("GUILDBANKFRAME_OPENED")
     self:RegisterEvent("GUILDBANKFRAME_CLOSED")
+
+    -- Modern Retail interaction detection.
+    -- This remains reliable when addons such as Baganator replace/hide
+    -- Blizzard's normal bank and guild-bank frames.
+    if self.WOWRetail then
+        self:RegisterEvent("PLAYER_INTERACTION_MANAGER_FRAME_SHOW")
+        self:RegisterEvent("PLAYER_INTERACTION_MANAGER_FRAME_HIDE")
+    end
 
     self:RegisterEvent("MAIL_SHOW")
     self:RegisterEvent("MAIL_CLOSED")

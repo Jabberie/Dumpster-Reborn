@@ -1,6 +1,9 @@
 package-as: Dumpster
+
 ignore:
   - .git
   - .github
+  - .gitignore
+  - .pkgmeta
   - README.md
   - LICENSE

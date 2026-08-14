@@ -102,11 +102,15 @@ function Compat:GetContainerItemLink(bagID, slotID)
     return C_Container.GetContainerItemLink(bagID, slotID)
 end
 
-function Compat:UseContainerItem(bagID, slotID, bankType)
-    if bankType ~= nil then
-        return C_Container.UseContainerItem(bagID, slotID, nil, bankType)
+function Dumpster.Compat:UseContainerItem(bag, slot, bankType)
+    if C_Container and C_Container.UseContainerItem then
+        C_Container.UseContainerItem(bag, slot, nil, bankType)
+        return
     end
-    return C_Container.UseContainerItem(bagID, slotID)
+
+    if UseContainerItem then
+        UseContainerItem(bag, slot)
+    end
 end
 
 function Compat:GetTooltipData(item, so)
@@ -171,4 +175,28 @@ function Compat:IsGuildBankVisible()
         or (Baganator_SingleViewGuildViewFrame and Baganator_SingleViewGuildViewFrame:IsVisible())
         or (BagnonGuild1 and BagnonGuild1:IsVisible())
         or false
+end
+
+function Dumpster.Compat:GetActiveBankType()
+    -- Stock Blizzard bank UI.
+    if BankFrame and BankFrame.GetActiveBankType then
+        local bankType = BankFrame:GetActiveBankType()
+
+        if bankType ~= nil then
+            return bankType
+        end
+    end
+
+    -- Baganator fallback.
+    local frame = _G.Baganator_SingleViewBankViewFramedark
+
+    if frame and frame.GetChildren then
+        for _, child in ipairs({ frame:GetChildren() }) do
+            if child:IsShown() and child.bankType ~= nil then
+                return child.bankType
+            end
+        end
+    end
+
+    return nil
 end
