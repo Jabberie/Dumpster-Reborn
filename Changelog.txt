@@ -1,153 +1,128 @@
-Unreleased
----------
+# Changelog
+
+All notable changes to Dumpster will be documented here.
+
+## 2026-08-14 - 12.001
+
 - Refactored the monolithic addon into Core, Compatibility, Commands, Parser, Items, Transfers, GuildBank, and UI modules.
 - Centralized shared debug/delayed state and inventory compatibility handling.
 - Fixed saved-set listing/counting for keyed saved variables.
 - Replaced hard-coded guild-bank/mail attachment slot counts with Blizzard constants when available.
 - Registered MAIL_SHOW through AceEvent and localized several leaked UI/global variables.
 - Preserved existing slash-command syntax and saved-set format.
+- Modernized Retail tooltip scanning using Blizzard's structured tooltip APIs.
+- Centralized container and bank API handling in the compatibility layer.
+- Improved Retail account/Warband bank support.
+- Cleaned up guild-bank queue and transfer state handling.
+- Consolidated client support around a single codebase and TOC.
 
-20081107 - 1.0
-* Initial release
+## 2026-03-02 - 12.0
 
-20081112 - 1.1
-* Added ability to specify number of stacks to dump
-* Limited dumping into mail to 12 stacks
+- Updated TOC.
 
-20081113 - 1.2
-* Added ability to specify item quality
+## 2025-07-05 - 11.3
 
-20081128 - 1.3
-* Fixed bug in numstacks (would dump 5 stacks from every bag instead of 5 total)
-* Ace-ified
-* moved strings to Dumpster-enUS.lua (for localization)
-* rewrote option parsing
-* added merchant frame
-* added trade frame
-* added bind status
-* added tooltip search
+- Added Bagnon references for the guild bank.
 
-20081203 - 1.4
-* Changed some message texts, hopefully more clear
-* Auto-selects merchant gossip if /din is used at an NPC (such as Innkeepers)
-* Will now load on demand if ACP or AddonLoader is installed 
+## 2025-07-05 - 11.2
 
-20090113 - 1.5
-* Changed to load on demand only for AddonLoader
-* Fixed /dall once and for good.  /dall dumps from every tab of the guild bank
-* Updated embedded version of Ace
-* Moved to searchoptions (so) dictionary for parameter passing.  No more 15-argument functions that all need to be updated with every new parameter!
-* Added /full and /partial for only dumping full or partial stacks
-* Added /dout for merchants (buys items). "/dout 4 Sacred Candle" will buy 4 Sacred Candles.  Note that if an item comes in stacks from the vendor (for example arrows come in stacks of 200), then the number refers to stacks.  "/dout 4 arrow" will actually buy 4 * 200 = 800 arrows
-* Added /dout for mail (pulls items from your mail)
-* Added /only parameter.  If you type "/dout 10 /only apple" and you have 3 apples in your inventory, Dumpster will only dump 7 additional apples.  Doesn't work with /dout on merchants
+- Fixed multiflag handling.
+- Added new expansions.
 
-20090121 - 1.6
-* Added /except parameter.  "/din /except apple" will dump everything except apples
-* Added /remain parameter.  If you have 20 apples, "/din 2 /remain apple" will dump 18 of them.
-* Removed a fair amount of code duplicaton.
-* Changed option parsing to allow numbers anywhere - "/din 2 /full apple" vs "/din /full 2 apple"
-* Changed some magic numbers to actual constants (for example BANK_CONTAINER instead of -1)
-* Automatically set the mail to Inbox or SendMail frame depending on whether we're doing /din or /dout
-* Added /to option for /din to mail.  "/din 2 apple /to HoboJoe" would mail 2 apples to HoboJoe.  /to is ignored other places
-* Added command chaining.  "/din 2 apple; 3 block; 1 pear tree" will dump those items in sequence
-* Fixed mail /dout skipping some messages.  Blizzard doesn't put mails in order or consecutively, so you just have to scan all 12 possible slots. Jerks.
-* Slight speedup: don't get tooltip unless we're actually checking it
+## 2024-09-07
 
-20090124 - 1.7
-* Fixed bug in /dall only checking the first two tabs
-* Fixed option parsing for /except
+- Fixed interface errors.
+- Added Warband bank extraction.
 
-20090127 - 1.8
-* fixed some bugs with /except
-* rewrote option parsing to be more flexible.  This will allow easier adding of options, and prevent options from clobbering each other
-* fixed a bug where /din to mail would add an unnecessary delay
-* Added sets! Any command line you would normally use with Dumpster can be made a set.
-	/dadd setname setdetails
-	/ddel setname
-	/dlist
+## 2023-12-08
 
-	Example:
-	/dadd frostbag /to mistertailor 60 Frostweave Cloth; 12 Infinite Dust; 2 Eternium Thread
-	/din frostbag
+- Updated the addon to work across multiple variants of World of Warcraft.
+- Retail: Guild bank queue will cancel if the Guild Bank closes.
 
-20090305 - 1.9
-* Added color based on status:
-	green - dumped everything you asked for (which may be nothing in the case of /only)
-	red - dumped nothing
-	blue - dumped some, but not all
-* Fixed a bug with dump counts when chaining commands
+## 2022-12-15
 
-20090413 - 2.0
-* Added GUI interface for editing sets (/dumpster)
-* Added ability to use set names in conjunction with other parameters
-* Added GUI help
+- Updated reagent bag support.
+- Updated guild bank event handling.
 
-20090425 - 2.1
-* Bumped TOC
+## 2019-03-07
 
-20101013 - 4.0
-* Bumped TOC
-* Fixed issue with "this" error
+- Bumped TOC.
+- Refreshed Ace libraries.
+- Added guild bank throttling workaround.
+- Reagent Bank now works with `/dout`.
+- Added error handling for pets/toys.
 
-20101016 - 4.1
-* Fixed tooltip scanning
-* Found to more "this" errors with sets
-* Updated included Ace3
-* Changed getglobal() usage to _G[]
-* Fixed adding a new set
-* Fixed error when no sets are defined (such as during first run)
+## 2019-03-07
 
-20170425 - 7.1
-* Bumped TOC
+- Bumped TOC.
+- Refreshed Ace libraries.
+- Added expansion filters:
+  - `/classic`
+  - `/tbc`
+  - `/wotlk`
+  - `/cata`
+  - `/mop`
+  - `/wod`
+  - `/legion`
+  - `/bfa`
 
-20170425 - 7.1
-* Bumped TOC
-* refeshed ace libs
+## 2018-07-23
 
-20180723
-* Bumped TOC
-* refeshed ace libs
-* updated code with suggestions from Neevar on curse to help with cross realm mail and Account Bound items
+- Bumped TOC.
+- Refreshed Ace libraries.
+- Updated code with suggestions from Neevar on Curse to help with cross-realm mail and Account Bound items.
 
-20190307
-* Bumped TOC
-* Refeshed ace libs
-* Added expansion filters
-  - /classic
-  - /tbc
-  - /wotlk
-  - /cata
-  - /mop
-  - /wod
-  - /legion
-  - /bfa
+## 2017-04-25 - 7.1
 
-20190307
-* Bumped TOC
-* Refeshed ace libs
-* Guild Bank throttling workaround
-* Reagent Bank now works with /dout
-* Error for pets/toys
+- Bumped TOC.
+- Refreshed Ace libraries.
 
-20221215
-* updated reagent bag
-* udpated guildbank event
+## 2017-04-25 - 7.1
 
-20231208
-* Updating Addon to work in all variants of WoW.
-* Retail: Guild bank Queue will cancel if Guild Bank closes.
+- Bumped TOC.
 
-20240907
-* Fixed interface errors
-* Warbank bank extraction
+## 2010-10-16 - 4.1
 
-20250705 - 11.2
-* Fixed multiflag
-* Added new expansions
+- Fixed tooltip scanning.
+- Found two more `"this"` errors with sets.
+- Updated included Ace3.
+- Changed `getglobal()` usage to `_G[]`.
+- Fixed adding a new set.
+- Fixed error when no sets are defined, such as during first run.
 
-20250705 - 11.3
-added bagnon references for guild bank
+## 2010-10-13 - 4.0
 
-20260302 - 12.0
-updated toc
+- Bumped TOC.
+- Fixed issue with `"this"` error.
+
+## 2009-04-25 - 2.1
+
+- Bumped TOC.
+
+## 2009-04-13 - 2.0
+
+- Added GUI interface for editing sets (`/dumpster`).
+- Added ability to use set names in conjunction with other parameters.
+- Added GUI help.
+
+## 2009-03-05 - 1.9
+
+- Added color based on status:
+  - Green - dumped everything requested, which may be nothing in the case of `/only`.
+  - Red - dumped nothing.
+  - Blue - dumped some, but not all.
+- Fixed a bug with dump counts when chaining commands.
+
+## 2009-01-27 - 1.8
+
+- Fixed some bugs with `/except`.
+- Rewrote option parsing to be more flexible. This allows easier addition of options and prevents options from clobbering each other.
+- Fixed a bug where `/din` to mail would add an unnecessary delay.
+- Added sets. Any command line normally used with Dumpster can be made a set.
+
+Commands:
+
+```text
+/dadd setname setdetails
+/ddel setname
+/dlist
