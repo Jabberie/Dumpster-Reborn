@@ -58,8 +58,15 @@ function Dumpster:GetTooltipFromItem(item, so)
 end
 
 function Dumpster:GetExpacID(item)
-	local _, _, _, _, _, _, _, _, _, _, _, _, _, _, expacID = GetItemInfo(item)
-	return expacID
+    local itemInfo
+
+    if C_Item and C_Item.GetItemInfo then
+        itemInfo = { C_Item.GetItemInfo(item) }
+    else
+        itemInfo = { GetItemInfo(item) }
+    end
+
+    return itemInfo[15]
 end
 function Dumpster:CheckBindandTooltip(item,so)
 	local tooltip=""
@@ -96,14 +103,19 @@ function Dumpster:CheckBindandTooltip(item,so)
 	end
 
 
-	if so.expansion ~= "AllExp" then
+	-- Expansion filtering.
+	-- A normal expansion qualifier includes only that expansion.
+	-- excludedExpansion is independent and always removes that expansion.
+	if so.expansion ~= "AllExp" or so.excludedExpansion ~= nil then
 		expID = self:GetExpacID(item)
 
 		if Dumpster.debug then
 			local expKey = self:ExpansionIdToKey(expID)
 			self:Print(L.debugExpansion(expID) .. " (" .. expKey .. ")")
 		end
+	end
 
+	if so.expansion ~= "AllExp" then
 		if expID ~= so.expansion then
 			if not so.except then
 				if Dumpster.debug then
@@ -112,17 +124,21 @@ function Dumpster:CheckBindandTooltip(item,so)
 				end
 				return false
 			end
-		else
-			if so.except then
-				if Dumpster.debug then
-					local searchKey = self:ExpansionIdToKey(so.expansion)
-					self:Print(L.debugTooltipExpansionFail(so.expansion, L[searchKey] or "unknown"))
-				end
-				return false
+		elseif so.except then
+			if Dumpster.debug then
+				local searchKey = self:ExpansionIdToKey(so.expansion)
+				self:Print(L.debugTooltipExpansionFail(so.expansion, L[searchKey] or "unknown"))
 			end
+			return false
 		end
 	end
 
+	if so.excludedExpansion ~= nil and expID == so.excludedExpansion then
+		if Dumpster.debug then
+			self:Print("DEBUG Excluding item from expansion [" .. tostring(expID) .. "]")
+		end
+		return false
+	end
 
 
 	if so.tooltipsearch and so.tooltipsearch~="" then

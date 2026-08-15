@@ -21,7 +21,7 @@ local function GetAddonVersion()
         version = GetAddOnMetadata(ADDON_NAME, "Version")
     end
 
-    if not version or version == "" or version == "@project-version@" then
+    if not version or version == "" or version == "12.001_release" then
         return "Dev"
     end
 
@@ -162,7 +162,10 @@ Dumpster.multiFlags = {
         tww = LE_EXPANSION_THE_WAR_WITHIN,
 
         midnight = ExpansionConstant("LE_EXPANSION_MIDNIGHT", 11),
+        mn = ExpansionConstant("LE_EXPANSION_MIDNIGHT", 11),
+
         thelasttitan = ExpansionConstant("LE_EXPANSION_THE_LAST_TITAN", 12),
+        tlt = ExpansionConstant("LE_EXPANSION_THE_LAST_TITAN", 12),
     },
 }
 

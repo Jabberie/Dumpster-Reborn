@@ -1,7 +1,7 @@
 ## Interface: 120100, 50504, 11509
 
 ## Title: Dumpster
-## Notes: Dump things in/out of your bank, guild bank, mail, trade, and vendors.
+## Notes: Quickly move filtered items between bags, Character/Warband banks, guild banks, mail, trade, and vendors.
 
 ## Author: Badhairday-Malygos
 ## Project Manager: Jabberie-Draka
@@ -12,7 +12,7 @@
 
 ## Version: @project-version@
 ## X-Revision: @project-version@
-## X-Date: 2026-08-14
+## X-Date: 2026-08-15
 
 ## X-Localizations: enUS
 ## X-CompatibleLocales: enUS

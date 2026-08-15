@@ -87,19 +87,27 @@ Dumpster's parser also supports qualifiers and saved sets for more specific matc
 
 ## Saved Sets
 
-Create or update a saved set:
+Frequently used filters can be stored as named Dumpster sets.
 
-    /dadd setname setdetails
+Use:
 
-Delete a saved set:
+```text
+/dset
+```
 
-    /ddel setname
+to work with saved Dumpster sets.
 
-List saved sets:
+Use:
 
-    /dlist
+```text
+/dlist
+```
 
-You can also use `/dumpster` to open Dumpster's configuration interface
+to display the sets you currently have saved.
+
+Saved sets are account-wide and are stored in the `dumpset` saved variable.
+
+Existing saved sets from older Dumpster releases are preserved by the current version.
 
 ## Qualifiers and Filtering
 

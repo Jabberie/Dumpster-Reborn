@@ -511,6 +511,8 @@ function Dumpster:DumpIt(argsearch, arginout)
     local so = {
         search = argsearch,
         expansion = "AllExp",
+        excludedExpansion = nil,
+        invalid = false,
         bind = "bindAll",
         tooltipsearch = "",
         stackfull = "",
@@ -531,6 +533,10 @@ function Dumpster:DumpIt(argsearch, arginout)
     }
 
     Dumpster:ParseOptions(so)
+
+    if so.invalid then
+        return
+    end
 
     if not Dumpster:OkToDump(so) then
         self:Print(L.notsafe)

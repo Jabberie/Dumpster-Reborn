@@ -84,6 +84,43 @@ function Dumpster:ParseOptions(so)
 	so.search = so.search:gsub("^ ",""):gsub(" $","")
 	if Dumpster.debug then self:Print(L.debugSearch(so.search)); end
 
+	-- Expansion exclusions are parsed before normal expansion flags.
+	-- /notcurrent
+	if so.search:find("/notcurrent%f[%A]") then
+		if GetExpansionLevel then
+			so.excludedExpansion = GetExpansionLevel()
+			if Dumpster.debug then
+				self:Print("DEBUG Excluding current expansion [" .. tostring(so.excludedExpansion) .. "]")
+			end
+		else
+			self:Print("Dumpster: Unable to determine the current expansion.")
+			so.invalid = true
+		end
+		so.search = so.search:gsub("/notcurrent%f[%A]", ""):gsub("  ", " ")
+	end
+
+	-- /notexp <expansion> and /exceptexp <expansion>
+	for _, qualifier in ipairs({ "notexp", "exceptexp" }) do
+		local pattern = "/" .. qualifier .. "%s+([%w_%-]+)"
+		local expansionName = so.search:match(pattern)
+
+		if expansionName then
+			local expansionID = self.multiFlags.expansion[expansionName]
+
+			if expansionID ~= nil then
+				so.excludedExpansion = expansionID
+				if Dumpster.debug then
+					self:Print("DEBUG Excluding expansion [" .. expansionName .. "] ID [" .. tostring(expansionID) .. "]")
+				end
+			else
+				self:Print("Dumpster: Unknown expansion for /" .. qualifier .. ": " .. expansionName)
+				so.invalid = true
+			end
+
+			so.search = so.search:gsub("/" .. qualifier .. "%s+" .. expansionName, "", 1):gsub("  ", " ")
+		end
+	end
+
 	local flag=""
 	local flagsearch=""
 	local flagvalues=""

@@ -425,6 +425,8 @@ function Dumpster:SetUpInterfaceOptions()
         categoryDumpster.ID = Dumpster.panel.name
         Settings.RegisterAddOnCategory(categoryDumpster)
 
+        Dumpster.settingsCategoryID = categoryDumpster.ID
+
         categoryHelp = Settings.RegisterCanvasLayoutSubcategory(
             categoryDumpster,
             Dumpster.helppanel,
@@ -433,6 +435,8 @@ function Dumpster:SetUpInterfaceOptions()
 
         categoryHelp.ID = Dumpster.helppanel.name
         Settings.RegisterAddOnCategory(categoryHelp)
+
+        Dumpster.settingsHelpCategoryID = categoryHelp.ID
     else
         InterfaceOptions_AddCategory(Dumpster.panel)
         InterfaceOptions_AddCategory(Dumpster.helppanel)
