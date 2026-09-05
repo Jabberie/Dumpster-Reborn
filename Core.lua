@@ -167,6 +167,64 @@ Dumpster.multiFlags = {
         thelasttitan = ExpansionConstant("LE_EXPANSION_THE_LAST_TITAN", 12),
         tlt = ExpansionConstant("LE_EXPANSION_THE_LAST_TITAN", 12),
     },
+    equipment = {
+        -- Armor
+        armor   = "armor",
+        cloth   = "cloth",
+        leather = "leather",
+        mail    = "mail",
+        plate   = "plate",
+        shield  = "shield",
+        cloak   = "cloak",
+
+        -- Jewelry
+        jewelry  = "jewelry",
+        ring     = "ring",
+        rings    = "ring",
+        neck     = "neck",
+        necks    = "neck",
+        trinket  = "trinket",
+        trinkets = "trinket",
+
+        -- Weapons
+        weapon   = "weapons",
+        weapons  = "weapons",
+
+        onehand = "onehand",
+        twohand = "twohand",
+        ranged  = "ranged",
+
+        axe       = "axe",
+        axes      = "axe",
+        mace      = "mace",
+        maces     = "mace",
+        sword     = "sword",
+        swords    = "sword",
+        dagger    = "dagger",
+        daggers   = "dagger",
+        fist      = "fist",
+        fists     = "fist",
+        polearm   = "polearm",
+        polearms  = "polearm",
+        staff     = "staff",
+        staves    = "staff",
+        bow       = "bow",
+        bows      = "bow",
+        gun       = "gun",
+        guns      = "gun",
+        crossbow  = "crossbow",
+        crossbows = "crossbow",
+        wand      = "wand",
+        wands     = "wand",
+        warglaive  = "warglaive",
+        warglaives = "warglaive",
+
+        -- Other equipment
+        offhand  = "offhand",
+
+        -- Everything equippable
+        gear = "gear",
+    },
 }
 
 -- ---------------------------------------------------------------------------

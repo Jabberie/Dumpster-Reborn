@@ -199,5 +199,219 @@ function Dumpster:ExpansionIdToKey(id)
     return tostring(id)
 end
 
+function Dumpster:CheckEquipmentType(item, so)
+    if not so.equipment then
+        return true
+    end
+
+    local _, _, _, equipLoc, _, classID, subclassID
+
+    if C_Item and C_Item.GetItemInfoInstant then
+        _, _, _, equipLoc, _, classID, subclassID =
+            C_Item.GetItemInfoInstant(item)
+
+    elseif GetItemInfoInstant then
+        _, _, _, equipLoc, _, classID, subclassID =
+            GetItemInfoInstant(item)
+
+    else
+        return false
+    end
+
+    local equipment = so.equipment
+
+    local ARMOR = Enum.ItemClass.Armor
+    local WEAPON = Enum.ItemClass.Weapon
+
+    -- -----------------------------------------------------------------------
+    -- Meta: all gear
+    -- -----------------------------------------------------------------------
+
+    if equipment == "gear" then
+        if not equipLoc or equipLoc == "" then
+            return false
+        end
+
+        -- Exclude things with no real equipment slot.
+        return classID == ARMOR
+            or classID == WEAPON
+            or equipLoc == "INVTYPE_FINGER"
+            or equipLoc == "INVTYPE_NECK"
+            or equipLoc == "INVTYPE_TRINKET"
+            or equipLoc == "INVTYPE_HOLDABLE"
+    end
+
+    -- -----------------------------------------------------------------------
+    -- Armor
+    -- -----------------------------------------------------------------------
+
+    if equipment == "armor" then
+        if classID ~= ARMOR then
+            return false
+        end
+
+        -- Body armor only.
+        return subclassID == Enum.ItemArmorSubclass.Cloth
+            or subclassID == Enum.ItemArmorSubclass.Leather
+            or subclassID == Enum.ItemArmorSubclass.Mail
+            or subclassID == Enum.ItemArmorSubclass.Plate
+    end
+
+    if equipment == "cloth" then
+        return classID == ARMOR
+            and subclassID == Enum.ItemArmorSubclass.Cloth
+            and equipLoc ~= "INVTYPE_CLOAK"
+
+    elseif equipment == "leather" then
+        return classID == ARMOR
+            and subclassID == Enum.ItemArmorSubclass.Leather
+
+    elseif equipment == "mail" then
+        return classID == ARMOR
+            and subclassID == Enum.ItemArmorSubclass.Mail
+
+    elseif equipment == "plate" then
+        return classID == ARMOR
+            and subclassID == Enum.ItemArmorSubclass.Plate
+
+    elseif equipment == "shield" then
+        return classID == ARMOR
+            and subclassID == Enum.ItemArmorSubclass.Shield
+
+    elseif equipment == "cloak" then
+        return equipLoc == "INVTYPE_CLOAK"
+    end
+
+    -- -----------------------------------------------------------------------
+    -- Jewelry
+    -- -----------------------------------------------------------------------
+
+    if equipment == "jewelry" then
+        return equipLoc == "INVTYPE_FINGER"
+            or equipLoc == "INVTYPE_NECK"
+            or equipLoc == "INVTYPE_TRINKET"
+
+    elseif equipment == "ring" then
+        return equipLoc == "INVTYPE_FINGER"
+
+    elseif equipment == "neck" then
+        return equipLoc == "INVTYPE_NECK"
+
+    elseif equipment == "trinket" then
+        return equipLoc == "INVTYPE_TRINKET"
+    end
+
+    -- -----------------------------------------------------------------------
+    -- Off-hand
+    -- -----------------------------------------------------------------------
+
+    if equipment == "offhand" then
+        return equipLoc == "INVTYPE_HOLDABLE"
+            or equipLoc == "INVTYPE_WEAPONOFFHAND"
+            or equipLoc == "INVTYPE_SHIELD"
+    end
+
+    -- -----------------------------------------------------------------------
+    -- All weapons
+    -- -----------------------------------------------------------------------
+
+    if equipment == "weapons" then
+        return classID == WEAPON
+    end
+
+    -- -----------------------------------------------------------------------
+    -- Weapon hand groups
+    -- -----------------------------------------------------------------------
+
+    if equipment == "onehand" then
+        return classID == WEAPON
+            and (
+                equipLoc == "INVTYPE_WEAPON"
+                or equipLoc == "INVTYPE_WEAPONMAINHAND"
+                or equipLoc == "INVTYPE_WEAPONOFFHAND"
+            )
+
+    elseif equipment == "twohand" then
+        return classID == WEAPON
+            and equipLoc == "INVTYPE_2HWEAPON"
+
+    elseif equipment == "ranged" then
+        return classID == WEAPON
+            and (
+                subclassID == Enum.ItemWeaponSubclass.Bows
+                or subclassID == Enum.ItemWeaponSubclass.Guns
+                or subclassID == Enum.ItemWeaponSubclass.Crossbow
+                or subclassID == Enum.ItemWeaponSubclass.Wand
+            )
+    end
+
+    -- -----------------------------------------------------------------------
+    -- Weapon subclasses
+    -- -----------------------------------------------------------------------
+
+    if equipment == "axe" then
+        return classID == WEAPON
+            and (
+                subclassID == Enum.ItemWeaponSubclass.Axe1H
+                or subclassID == Enum.ItemWeaponSubclass.Axe2H
+            )
+
+    elseif equipment == "mace" then
+        return classID == WEAPON
+            and (
+                subclassID == Enum.ItemWeaponSubclass.Mace1H
+                or subclassID == Enum.ItemWeaponSubclass.Mace2H
+            )
+
+    elseif equipment == "sword" then
+        return classID == WEAPON
+            and (
+                subclassID == Enum.ItemWeaponSubclass.Sword1H
+                or subclassID == Enum.ItemWeaponSubclass.Sword2H
+            )
+
+    elseif equipment == "dagger" then
+        return classID == WEAPON
+            and subclassID == Enum.ItemWeaponSubclass.Dagger
+
+    elseif equipment == "fist" then
+        return classID == WEAPON
+            and (
+                subclassID == Enum.ItemWeaponSubclass.Bearclaw
+                or subclassID == Enum.ItemWeaponSubclass.Catclaw
+                or subclassID == Enum.ItemWeaponSubclass.Unarmed
+            )
+
+    elseif equipment == "polearm" then
+        return classID == WEAPON
+            and subclassID == Enum.ItemWeaponSubclass.Polearm
+
+    elseif equipment == "staff" then
+        return classID == WEAPON
+            and subclassID == Enum.ItemWeaponSubclass.Staff
+
+    elseif equipment == "bow" then
+        return classID == WEAPON
+            and subclassID == Enum.ItemWeaponSubclass.Bows
+
+    elseif equipment == "gun" then
+        return classID == WEAPON
+            and subclassID == Enum.ItemWeaponSubclass.Guns
+
+    elseif equipment == "crossbow" then
+        return classID == WEAPON
+            and subclassID == Enum.ItemWeaponSubclass.Crossbow
+
+    elseif equipment == "wand" then
+        return classID == WEAPON
+            and subclassID == Enum.ItemWeaponSubclass.Wand
+
+    elseif equipment == "warglaive" then
+        return classID == WEAPON
+            and subclassID == Enum.ItemWeaponSubclass.Warglaive
+    end
+
+    return true
+end
 
 -- ############# Expansion

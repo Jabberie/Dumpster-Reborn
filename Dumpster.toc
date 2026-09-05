@@ -1,7 +1,7 @@
 ## Interface: 120100, 50504, 11509
 
 ## Title: Dumpster
-## Notes: Quickly move filtered items between bags, Character/Warband banks, guild banks, mail, trade, and vendors.
+## Notes: Dump things in/out of your bank, guild bank, mail, trade, and vendors.
 
 ## Author: Badhairday-Malygos
 ## Project Manager: Jabberie-Draka
@@ -10,9 +10,9 @@
 ## X-Website: https://www.curseforge.com/wow/addons/dumpster-reborn
 ## X-Category: Inventory
 
-## Version: @project-version@
-## X-Revision: @project-version@
-## X-Date: 2026-08-15
+## Version: 12.002_release
+## X-Revision: 12.001_release
+## X-Date: 2026-08-14
 
 ## X-Localizations: enUS
 ## X-CompatibleLocales: enUS

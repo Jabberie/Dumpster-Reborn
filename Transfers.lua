@@ -309,6 +309,112 @@ function Dumpster:DumpOutMerchant(so)
     return Dumpster:NewDumpBag(so)
 end
 
+
+-- ---------------------------------------------------------------------------
+-- Existing-item destination filtering
+-- ---------------------------------------------------------------------------
+
+local function GetItemID(itemLink)
+    if not itemLink then
+        return nil
+    end
+
+    if C_Item and C_Item.GetItemInfoInstant then
+        return C_Item.GetItemInfoInstant(itemLink)
+    end
+
+    if GetItemInfoInstant then
+        return GetItemInfoInstant(itemLink)
+    end
+
+    return tonumber(
+        itemLink:match("item:(%d+)")
+    )
+end
+
+function Dumpster:BuildExistingItemLookup(where)
+    local existing = {}
+
+    local function AddItem(itemLink)
+        local itemID = GetItemID(itemLink)
+
+        if itemID then
+            existing[itemID] = true
+        end
+    end
+
+    -- Character Bank
+    if where == "bank" then
+        for _, bagID in ipairs(
+            Dumpster.Compat:GetCharacterBankContainers()
+        ) do
+            local slots =
+                Dumpster.Compat:GetContainerNumSlots(bagID)
+
+            for slot = 1, slots do
+                AddItem(
+                    Dumpster.Compat:GetContainerItemLink(
+                        bagID,
+                        slot
+                    )
+                )
+            end
+        end
+
+    -- Warband Bank
+    elseif where == "abank" then
+        for _, bagID in ipairs(
+            Dumpster.Compat:GetAccountBankContainers()
+        ) do
+            local slots =
+                Dumpster.Compat:GetContainerNumSlots(bagID)
+
+            for slot = 1, slots do
+                AddItem(
+                    Dumpster.Compat:GetContainerItemLink(
+                        bagID,
+                        slot
+                    )
+                )
+            end
+        end
+
+    -- Guild Bank
+    elseif where == "gbank" then
+        local numTabs = GetNumGuildBankTabs()
+
+        for tab = 1, numTabs do
+            for slot = 1, GUILD_BANK_SLOTS_PER_TAB do
+                AddItem(
+                    GetGuildBankItemLink(
+                        tab,
+                        slot
+                    )
+                )
+            end
+        end
+    end
+
+    return existing
+end
+
+function Dumpster:ItemExistsInDestination(itemLink, so)
+    if not so.existing then
+        return true
+    end
+
+    if not so.existingItems then
+        return false
+    end
+
+    local itemID = GetItemID(itemLink)
+
+    return itemID
+        and so.existingItems[itemID] == true
+end
+
+
+
 function Dumpster:DumpIn(so)
     local dumpcount = 0
 
@@ -406,19 +512,21 @@ function Dumpster:NewDumpBag(so)
         local item = Dumpster:getItemLink(so)
 
         if item then
-            if Dumpster.superdebug then
-                self:Print(
-                    L.debugDumpBagCheckItem(
-                        item,
-                        so.bag,
-                        so.slot
-                    )
-                )
-            end
-
-            if Dumpster:CheckSearchText(item, so)
+            if Dumpster:ItemExistsInDestination(item, so)
+                and Dumpster:CheckSearchText(item, so)
                 and Dumpster:CheckBindandTooltip(item, so)
-                and Dumpster:CheckItemQuality(item, so) then
+                and Dumpster:CheckItemQuality(item, so)
+                and Dumpster:CheckEquipmentType(item, so) then
+
+                if Dumpster.superdebug then
+                    self:Print(
+                        L.debugDumpBagCheckItem(
+                            item,
+                            so.bag,
+                            so.slot
+                        )
+                    )
+                end
 
                 local numinstack = Dumpster:getNumInStack(so)
 
@@ -485,6 +593,7 @@ function Dumpster:NewDumpBag(so)
                     end
                 end
             end
+
         elseif Dumpster.superdebug then
             self:Print(
                 L.debugnoitem(
@@ -516,6 +625,7 @@ function Dumpster:DumpIt(argsearch, arginout)
         bind = "bindAll",
         tooltipsearch = "",
         stackfull = "",
+        equipment = nil,
         maxcount = 999,
         keepmaxcount = 999,
         inout = arginout,
@@ -525,6 +635,8 @@ function Dumpster:DumpIt(argsearch, arginout)
         delayed = false,
         remain = false,
         except = false,
+        existing = false,
+        existingItems = nil,        
         stacksize = 1,
         where = "",
         leftovers = "",
@@ -605,6 +717,29 @@ function Dumpster:DumpWithso(so)
                 else
                     so.where = "bank"
                 end
+
+                if so.existing then
+                    so.existingItems =
+                        Dumpster:BuildExistingItemLookup(so.where)
+
+                    if Dumpster.debug then
+                        local count = 0
+
+                        for _ in pairs(so.existingItems) do
+                            count = count + 1
+                        end
+
+                        self:Print(
+                            "DEBUG /existing found " ..
+                            tostring(count) ..
+                            " unique item IDs in destination"
+                        )
+                    end
+                end
+
+
+
+
 
                 dumpcount = Dumpster:DumpIn(so)
 

@@ -2,51 +2,106 @@
 
 All notable changes to Dumpster will be documented here.
 
-## 2026-08-15 - 12.002
+# Changelog
 
-### Added
+## 12.002
 
-- Full Retail Character Bank support using Blizzard's modern Character Bank tab containers.
-- Full Retail Warband Bank deposit and withdrawal support.
-- Automatic detection of the currently selected Character or Warband Bank.
-- Baganator Character Bank and Warband Bank compatibility.
-- EllesmereUI compatibility through its exposed bank compatibility API.
-- Modular bank detector system for easier support of replacement bank interfaces.
-- Bank compatibility diagnostic commands:
+### New
+
+- Added `/existing` deposit filtering.
+  - `/din /existing .` deposits only items already present in the current destination.
+  - Supports Character Bank, Warband Bank, and Guild Bank destinations.
+  - Can be combined with other Dumpster filters.
+
+- Added equipment category filtering.
+
+#### Equipment
+- `/gear` - all equippable gear.
+
+#### Armor
+- `/armor` - cloth, leather, mail, and plate armor.
+- `/cloth`
+- `/leather`
+- `/mail`
+- `/plate`
+- `/shield`
+- `/cloak`
+
+#### Jewelry
+- `/jewelry` - rings, necklaces, and trinkets.
+- `/ring` and `/rings`
+- `/neck` and `/necks`
+- `/trinket` and `/trinkets`
+
+#### Weapons
+- `/weapon` and `/weapons` - all weapons.
+- `/onehand`
+- `/twohand`
+- `/ranged`
+- `/axe` and `/axes`
+- `/mace` and `/maces`
+- `/sword` and `/swords`
+- `/dagger` and `/daggers`
+- `/fist` and `/fists`
+- `/polearm` and `/polearms`
+- `/staff` and `/staves`
+- `/bow` and `/bows`
+- `/gun` and `/guns`
+- `/crossbow` and `/crossbows`
+- `/wand` and `/wands`
+- `/warglaive` and `/warglaives`
+
+#### Other equipment
+- `/offhand` - off-hand equipment, including shields and held-in-off-hand items.
+
+### Expansion Filtering
+
+- Added `/notcurrent`.
+  - Excludes items from the currently active expansion.
+- Added `/notexp <expansion>`.
+- Added `/exceptexp <expansion>`.
+- Added/updated expansion aliases for The War Within, Midnight, and The Last Titan.
+
+### Bank Improvements
+
+- Added full Retail Character Bank tab support.
+- Added full Warband Bank support.
+- Deposits now correctly target the currently selected Character or Warband bank.
+- Added modern Retail bank-container detection.
+- Improved Guild Bank handling with replacement bank UIs.
+- Added Baganator bank detection.
+- Added EllesmereUI Bags bank detection through its exposed bank compatibility API.
+
+### Compatibility
+
+- Modernized item tooltip scanning using `C_TooltipInfo` on Retail.
+- Retained legacy tooltip scanning for supported Classic clients.
+- Centralized modern and legacy container API handling.
+- Improved compatibility between Retail and Classic-family clients.
+
+### Diagnostics
+
+- Added bank compatibility diagnostics:
   - `/dumpster banktype`
   - `/dumpster bankdebug`
   - `/dumpster bankframes`
-- Expansion exclusion filters:
-  - `/notcurrent`
-  - `/notexp <expansion>`
-  - `/exceptexp <expansion>`
-- Midnight expansion aliases:
-  - `/mn`
-  - `/midnight`
-- The Last Titan expansion aliases:
-  - `/tlt`
-  - `/thelasttitan`
+- Bank diagnostics now avoid unsafe broad frame enumeration on modern Retail clients.
 
-### Changed
+### UI
 
-- Updated Retail Character Bank handling to use `CharacterBankTab_1` through `CharacterBankTab_6`.
-- Updated Retail Warband Bank handling to use `AccountBankTab` containers.
-- `/din` now explicitly targets the selected Character or Warband Bank type.
-- `/dout` now scans the correct modern Character or Warband Bank containers.
-- Improved replacement bank-interface handling through Blizzard state, generic addon compatibility APIs, and targeted fallbacks.
-- Improved Guild Bank detection so replacement bank interfaces no longer need the Blizzard Guild Bank frame to be visible.
-- Bank diagnostics no longer globally enumerate visible frames on Retail, avoiding secret-value/taint errors.
-- Expanded expansion qualifier handling and aliases.
+- Improved the Dumpster settings panel.
+- Improved Saved Set management.
+- Fixed the settings panel occasionally appearing blank when first opened.
+- Updated settings handling for the modern Retail Settings API.
 
 ### Fixed
 
-- Fixed `/din` depositing items into the Character Bank when the Warband Bank was selected.
-- Fixed `/dout` failing to withdraw from modern Retail Character Bank tabs.
-- Fixed Guild Bank transfers being queued but cancelled when Baganator replaced the Blizzard Guild Bank frame.
-- Fixed duplicate expansion aliases causing `/tww` and `/warwithin` to resolve incorrectly.
-- Fixed Retail tooltip filtering after compatibility refactoring.
-- Fixed bank compatibility detection with EllesmereUI.
-- Fixed several replacement-bank UI detection paths where Blizzard's `BankFrame:GetActiveBankType()` returned `nil`.
+- Fixed Character Bank detection on modern Retail.
+- Fixed Warband deposits incorrectly targeting the Character Bank.
+- Fixed Guild Bank transfers when using supported replacement bank UIs.
+- Fixed modern tooltip scanning regressions.
+- Fixed Saved Set display/count handling.
+- Fixed several compatibility issues introduced by changes to the Retail container and bank APIs.
 
 ## 2026-08-14 - 12.001
 
